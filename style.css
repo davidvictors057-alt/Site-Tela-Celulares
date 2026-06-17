@@ -1,0 +1,1354 @@
+/* ==========================================================================
+   SITE TELA CELULARES (CLONE REALME STORE) - STYLE SYSTEM
+   ========================================================================== */
+
+/* 1. VARIÁVEIS DO DESIGN SYSTEM */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f7;
+    --bg-card: #ffffff;
+    --accent: #f25c05;
+    --accent-hover: #d14f04;
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-muted: #86868b;
+    --border-color: #e5e5ea;
+    --border-light: #d1d1d6;
+    --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --header-height: 80px;
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 2. RESET E ESTILOS GLOBAIS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+body {
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    overflow-x: hidden;
+    background-color: var(--bg-primary);
+    -webkit-font-smoothing: antialiased;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+button,
+input {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    outline: none;
+}
+
+/* 3. (TOP BANNER REMOVIDO) */
+
+/* 4. CABEÇALHO (Header) */
+.header {
+    height: var(--header-height);
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    transition: background-color var(--transition-normal);
+}
+
+.header.scrolled {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.header-container {
+    max-width: 1200px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+}
+
+/* Logo */
+.logo-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.company-logo {
+    height: 64px;
+    width: auto;
+    object-fit: contain;
+    transition: filter var(--transition-fast);
+}
+
+/* Menu de Navegação */
+.nav-menu {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.nav-menu>ul {
+    display: flex;
+    list-style: none;
+    height: 100%;
+    gap: 12px;
+    /* Reduzido levemente para dar mais folga no desktop */
+}
+
+.nav-menu>ul>li {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding: 8px 0;
+    white-space: nowrap;
+    /* Impede terminantemente a quebra de linha de termos compostos */
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--accent);
+    transition: width var(--transition-fast);
+}
+
+.nav-link:hover {
+    color: var(--text-primary);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* --- LÓGICA DO SUBMENU DROPDOWN (CORTINA) --- */
+.has-dropdown {
+    position: relative;
+    /* Base de posicionamento */
+    height: 100%;
+}
+
+.has-mega-dropdown {
+    position: static;
+}
+
+/* Menu Cortina Organizado em Lista Limpa */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    /* Exatamente abaixo do header */
+    left: 0;
+    /* Alinhado à esquerda do item pai */
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    min-width: 260px;
+    /* Largura apropriada para caber os nomes inteiros dos modelos */
+    padding: 10px 0;
+    list-style: none;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    height: auto !important;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity var(--transition-fast) ease, transform var(--transition-fast) ease, visibility var(--transition-fast) ease;
+    z-index: 1000;
+}
+
+/* Mega Menu Exclusivo para Celulares */
+.mega-menu {
+    position: absolute;
+    top: 100%;
+    left: 24px;
+    right: 24px;
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+    padding: 24px 32px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(12px);
+    transition: opacity var(--transition-fast) ease, transform var(--transition-fast) ease, visibility var(--transition-fast) ease;
+    z-index: 1000;
+}
+
+/* Exibe ao passar o mouse */
+.has-dropdown:hover .dropdown-menu,
+.has-mega-dropdown:hover .mega-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Colunas do Mega Menu */
+.mega-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.mega-column-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding-bottom: 6px;
+    text-align: left;
+}
+
+.mega-column ul {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    height: auto !important;
+}
+
+.mega-column li {
+    display: block !important;
+    height: auto !important;
+    width: 100% !important;
+    align-items: flex-start !important;
+}
+
+.mega-column a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+    transition: color var(--transition-fast), padding-left var(--transition-fast);
+}
+
+.mega-column a:hover {
+    color: var(--accent);
+    padding-left: 6px;
+    background-color: transparent !important;
+}
+
+/* Links do Dropdown */
+.dropdown-menu li {
+    width: 100% !important;
+    display: block !important;
+    padding: 0 !important;
+    height: auto !important;
+    align-items: stretch !important;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.dropdown-menu li:last-child a {
+    border-bottom: none;
+    /* Remove a última borda divisória */
+}
+
+.dropdown-menu a:hover {
+    background-color: var(--bg-secondary);
+    color: var(--accent);
+}
+
+/* Busca */
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 1px solid transparent;
+    border-radius: 30px;
+    padding: 4px 6px 4px 16px;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.search-box:focus-within {
+    border-color: var(--accent);
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.search-box input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    width: 100px;
+    /* Reduzido de 140px para liberar espaço para o menu de navegação */
+    transition: width var(--transition-normal);
+}
+
+.search-box input:focus {
+    width: 140px;
+}
+
+.btn-search {
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 50%;
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.btn-search:hover {
+    color: var(--accent);
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.mobile-menu-toggle {
+    display: none;
+}
+
+.mobile-actions {
+    display: none;
+}
+
+/* 5. CARROSSEL HERO */
+.hero-carousel-section {
+    position: relative;
+    background-color: var(--bg-primary);
+    width: 100%;
+}
+
+.carousel-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 1;
+    /* Proporção Ultra-Wide panorâmica de 4:1 */
+    height: auto;
+    /* Altura responsiva mantendo a proporção */
+    overflow: hidden;
+    background-color: #ffffff;
+    /* Fundo branco para laterais em monitores ultrawide */
+}
+
+.carousel-slides {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 1;
+    transition: opacity var(--transition-slow) ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+    z-index: 2;
+}
+
+/* Força texto branco no banner escuro/roxo do Priority Pack */
+.carousel-slide[data-index="2"] .slide-title,
+.carousel-slide[data-index="2"] .slide-subtitle {
+    color: #ffffff;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* Mantém proporção sem cortar nem distorcer a imagem */
+    object-position: center;
+}
+
+/* Overlay de Conteúdo dos Slides */
+.slide-content-overlay {
+    position: absolute;
+    left: 10%;
+    z-index: 3;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    animation: fadeInUp var(--transition-slow) forwards;
+    padding: 24px;
+}
+
+.slide-content-overlay.text-right {
+    left: auto;
+    right: 10%;
+    align-items: flex-end;
+    text-align: right;
+}
+
+.slide-title {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+}
+
+.badge-5g {
+    background-color: var(--accent);
+    color: var(--bg-primary);
+    font-size: 1rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    vertical-align: middle;
+    margin-left: 8px;
+}
+
+.slide-subtitle {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 300;
+    margin-bottom: 24px;
+}
+
+.btn-slide-cta {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-primary);
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    backdrop-filter: blur(10px);
+    transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btn-slide-cta:hover {
+    transform: scale(1.03);
+    background-color: var(--accent);
+    color: var(--bg-primary);
+    border-color: var(--accent);
+}
+
+.btn-slide-cta.btn-yellow {
+    background-color: var(--accent);
+    color: var(--bg-primary);
+    border-color: var(--accent);
+}
+
+.btn-slide-cta.btn-yellow:hover {
+    background-color: var(--accent-hover);
+}
+
+/* Setas do Carrossel */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background-color var(--transition-fast), transform var(--transition-fast);
+    font-size: 1rem;
+}
+
+.carousel-btn:hover {
+    background-color: var(--accent);
+    color: var(--bg-primary);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.carousel-btn.prev {
+    left: 20px;
+}
+
+.carousel-btn.next {
+    right: 20px;
+}
+
+/* Indicadores (Pontos) */
+.carousel-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: width var(--transition-fast), background-color var(--transition-fast);
+}
+
+.dot.active {
+    width: 24px;
+    border-radius: 4px;
+    background-color: var(--accent);
+}
+
+/* 6. BARRA DE CATEGORIAS (Quick Nav) */
+.quick-nav-section {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 24px 0;
+}
+
+.quick-nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px 8px;
+    /* Adicionado padding-top para evitar corte no hover */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    overflow-x: auto;
+    /* Esconder barra de rolagem nativa mantendo funcionalidade */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.quick-nav-container::-webkit-scrollbar {
+    display: none;
+    /* Safari e Chrome */
+}
+
+.quick-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    min-width: 90px;
+}
+
+.nav-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: transform var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.quick-nav-item:hover .nav-icon-wrapper {
+    transform: translateY(-4px);
+    color: var(--accent);
+    border-color: var(--accent);
+    background-color: rgba(242, 92, 5, 0.05);
+}
+
+.nav-title {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+}
+
+.quick-nav-item:hover .nav-title {
+    color: var(--text-primary);
+}
+
+/* 7. SEÇÕES E GRIDS */
+.section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 24px;
+}
+
+.section-heading {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 32px;
+    letter-spacing: -0.5px;
+    position: relative;
+    display: inline-block;
+}
+
+.section-heading::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: var(--accent);
+}
+
+/* Card Hero Lançamento */
+.launch-hero-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    min-height: 380px;
+    transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.launch-hero-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.launch-image-container {
+    flex: 1.3;
+    overflow: hidden;
+    position: relative;
+}
+
+.launch-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.launch-hero-card:hover .launch-image-container img {
+    transform: scale(1.02);
+}
+
+.launch-details {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    border-left: 1px solid var(--border-color);
+}
+
+.launch-badge {
+    background-color: rgba(242, 92, 5, 0.1);
+    color: var(--accent);
+    border: 1px solid rgba(242, 92, 5, 0.2);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+}
+
+.launch-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.launch-desc {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+    font-weight: 300;
+}
+
+.launch-pricing {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 28px;
+}
+
+.launch-pricing small {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.launch-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    color: var(--bg-primary);
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+    transform: scale(1.02);
+}
+
+.btn-secondary {
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--text-primary);
+    transform: scale(1.02);
+}
+
+/* Grid de Produtos */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+/* Card de Produto */
+.product-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+    transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.product-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.product-image-container {
+    height: 240px;
+    overflow: hidden;
+    position: relative;
+    background-color: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.product-card:hover .product-image-container img {
+    transform: scale(1.03);
+}
+
+.product-info {
+    padding: 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.product-tagline {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    font-weight: 300;
+    flex-grow: 1;
+}
+
+.product-price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.price-discount {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.price-original {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-decoration: line-through;
+}
+
+.btn-buy-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.product-card:hover .btn-buy-card {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-primary);
+}
+
+/* Card Destaque (featured-card) */
+.product-card.featured-card {
+    grid-column: span 1;
+}
+
+.product-card.featured-card .product-image-container {
+    height: 240px;
+}
+
+/* 8. RODAPÉ (Footer) */
+.footer {
+    background-color: #121212;
+    color: #86868b;
+    border-top: 1px solid #1c1c1e;
+    padding: 60px 0 30px;
+    font-size: 0.85rem;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #1c1c1e;
+}
+
+.footer-col h4 {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col li {
+    margin-bottom: 12px;
+}
+
+.footer-col a {
+    color: #86868b;
+    transition: color var(--transition-fast);
+}
+
+.footer-col a:hover {
+    color: var(--accent);
+}
+
+/* Atendimento */
+.footer-contact-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.support-phone {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+
+.support-hours {
+    color: #86868b;
+    font-size: 0.8rem;
+    margin-bottom: 20px;
+    font-weight: 300;
+}
+
+.btn-footer-chat {
+    background-color: #ffffff;
+    color: #121212;
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 10px 18px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.btn-footer-chat:hover {
+    background-color: var(--accent);
+    color: #ffffff;
+    transform: scale(1.02);
+}
+
+/* Rodapé Inferior */
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 30px;
+    color: #86868b;
+    font-size: 0.8rem;
+    font-weight: 300;
+}
+
+.footer-socials {
+    display: flex;
+    gap: 16px;
+}
+
+.footer-socials a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+}
+
+.footer-socials a:hover {
+    color: var(--accent);
+}
+
+/* 9. ANIMAÇÕES */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 10. MEDIA QUERIES (RESPONSIVIDADE) */
+
+@media (max-width: 1024px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .carousel-container {
+        height: auto;
+    }
+
+    .slide-title {
+        font-size: 2.2rem;
+    }
+
+    .slide-subtitle {
+        font-size: 1rem;
+    }
+
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --header-height: 70px;
+    }
+
+    /* Header Navigation - Mobile Drawer */
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: var(--header-height);
+        left: 0;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.98);
+        border-bottom: 1px solid var(--border-color);
+        padding: 24px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        z-index: 1000;
+        height: auto;
+    }
+
+    .nav-menu.active {
+        display: block;
+        animation: fadeInUp var(--transition-fast) forwards;
+    }
+
+    .nav-menu>ul {
+        flex-direction: column;
+        gap: 16px;
+        height: auto;
+        align-items: flex-start;
+    }
+
+    .nav-menu>ul>li {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .nav-menu>ul>li>.login-nav-item {
+        display: none;
+        /* Escondido no drawer (já está na barra) */
+    }
+
+    .nav-link {
+        width: 100%;
+        display: block;
+        font-size: 1.1rem;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .header-container {
+        padding: 0 16px;
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo-container {
+        flex: 1.5;
+        /* Aumentado para dar mais espaço ao logotipo */
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .company-logo {
+        height: 58px;
+        /* Logo maior no mobile aproveitando a altura do header de 70px */
+        max-width: 140px;
+        /* Evita que o logo seja esmagado lateralmente */
+        object-fit: contain;
+    }
+
+    .search-container {
+        flex: 1.2;
+        /* Ajustado para acomodar melhor os três elementos sem apertar a logo */
+        display: flex;
+        justify-content: center;
+    }
+
+    .search-box input {
+        width: 80px;
+    }
+
+    .search-box input:focus {
+        width: 110px;
+    }
+
+    .mobile-actions {
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .mobile-login-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-primary);
+        padding: 8px;
+        border-radius: 50%;
+        transition: background-color var(--transition-fast), color var(--transition-fast);
+    }
+
+    .mobile-login-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: var(--accent);
+    }
+
+    .mobile-menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-primary);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: background-color var(--transition-fast), color var(--transition-fast);
+    }
+
+    .mobile-menu-toggle:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: var(--accent);
+    }
+
+    .mobile-menu-toggle.active svg {
+        color: var(--accent);
+    }
+
+
+    /* Carousel */
+    .carousel-container {
+        height: auto;
+    }
+
+    .slide-content-overlay {
+        left: 5%;
+        right: 5%;
+        max-width: 100%;
+        align-items: center;
+        text-align: center;
+    }
+
+    .slide-content-overlay.text-right {
+        right: 5%;
+        align-items: center;
+        text-align: center;
+    }
+
+    .slide-title {
+        font-size: 1.8rem;
+    }
+
+    .slide-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+    }
+
+    .carousel-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .carousel-btn.prev {
+        left: 10px;
+    }
+
+    .carousel-btn.next {
+        right: 10px;
+    }
+
+    /* Quick Nav */
+    .quick-nav-section {
+        padding: 16px 0;
+    }
+
+    .quick-nav-container {
+        padding: 0 16px;
+        gap: 8px;
+    }
+
+    .nav-icon-wrapper {
+        width: 48px;
+        height: 48px;
+    }
+
+    .nav-icon-wrapper svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    /* Launch Hero */
+    .launch-hero-card {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .launch-image-container {
+        height: 200px;
+    }
+
+    .launch-details {
+        padding: 24px;
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .launch-title {
+        font-size: 1.4rem;
+    }
+
+    /* Product Grid */
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .product-card {
+        min-height: auto;
+    }
+
+    .section-container {
+        padding: 40px 16px;
+    }
+
+    .section-heading {
+        font-size: 1.6rem;
+        margin-bottom: 24px;
+    }
+
+    /* Footer */
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+}
+
+/* 11. BOTÃO FLUTUANTE DO WHATSAPP */
+.whatsapp-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 64px;
+    /* Diminuído para um tamanho padrão excelente no desktop */
+    height: 64px;
+    background-color: #25d366;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.whatsapp-btn:hover {
+    transform: scale(1.1);
+    background-color: #20ba5a;
+    color: #ffffff;
+}
+
+.whatsapp-btn svg {
+    width: 36px;
+    /* Diminuído proporcionalmente */
+    height: 36px;
+    z-index: 10001;
+}
+
+/* Animação do anel pulsante */
+.pulse-ring {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #25d366;
+    border-radius: 50%;
+    z-index: 10000;
+    animation: whatsapp-pulse 2s infinite ease-out;
+}
+
+@keyframes whatsapp-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Ajuste do botão do WhatsApp para mobile */
+@media (max-width: 768px) {
+    .whatsapp-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 56px;
+        /* Ajustado para tamanho mobile perfeito e compacto */
+        height: 56px;
+    }
+
+    .whatsapp-btn svg {
+        width: 30px;
+        height: 30px;
+    }
+}

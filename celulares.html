@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celulares - Tela Celulares</title>
+    <!-- Meta tags SEO -->
+    <meta name="description" content="Navegue pela nossa seleção completa de smartphones Realme, Xiaomi, Poco, Redmi e aparelhos de entrada. Tecnologia premium ao seu alcance.">
+    <meta name="keywords" content="tela celulares, smartphones, realme, xiaomi, poco, redmi, celulares de entrada">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos globais e componentes -->
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* Estilos específicos para a página de categorias */
+        .category-nav {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: var(--header-height);
+            z-index: 900;
+            padding: 12px 0;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .category-nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .category-nav-container::-webkit-scrollbar {
+            display: none;
+        }
+        .category-btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            white-space: nowrap;
+            transition: all var(--transition-fast);
+        }
+        .category-btn.active, .category-btn:hover {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-primary);
+            box-shadow: 0 4px 10px rgba(242, 92, 5, 0.25);
+        }
+        
+        .category-section {
+            display: none;
+        }
+        .category-section.active {
+            display: block;
+            animation: fadeInUp var(--transition-normal) forwards;
+        }
+
+        /* GRID RESPONSIVA DE CARDS HORIZONTAIS RETANGULARES (2x2) */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        /* CARD DE PRODUTO RETANGULAR HORIZONTAL */
+        .horizontal-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex; /* Alinha imagem na esquerda e texto na direita */
+            flex-direction: row; 
+            min-height: 250px;
+            height: auto;
+            transition: border-color var(--transition-normal), box-shadow var(--transition-normal), transform var(--transition-normal);
+            position: relative;
+        }
+        
+        .horizontal-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-6px); /* Efeito 3D de salto/elevação */
+        }
+
+        /* Seletor de capacidade/RAM */
+        .storage-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .storage-badge {
+            background-color: var(--border-color);
+            color: var(--text-secondary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border: 1px solid transparent;
+        }
+        .storage-badge.active {
+            background-color: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        /* Seletor de cores */
+        .color-selector {
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        .color-selector span {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .color-dots {
+            display: flex;
+            gap: 8px;
+        }
+        .color-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all var(--transition-fast);
+            box-shadow: inset 0 0 2px rgba(0,0,0,0.2);
+        }
+        .color-dot.active {
+            border-color: var(--accent);
+            transform: scale(1.15);
+        }
+
+        /* Lista de Especificações */
+        .spec-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 12px 0;
+            text-align: left;
+        }
+        .spec-list li {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            position: relative;
+            padding-left: 14px;
+            margin-bottom: 2px;
+        }
+        .spec-list li::before {
+            content: "•";
+            color: var(--accent);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        /* IMAGEM À ESQUERDA */
+        .horizontal-image-container {
+            width: 35%; /* Ocupa a esquerda */
+            min-width: 120px;
+            background-color: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-right: 1px solid var(--border-color);
+        }
+        
+        .horizontal-image-container img,
+        .horizontal-image-placeholder {
+            transition: transform var(--transition-slow), filter var(--transition-fast);
+        }
+        
+        /* Efeito de zoom com leve rotação (GIF-like) no hover da imagem */
+        .horizontal-card:hover .horizontal-image-container img,
+        .horizontal-card:hover .horizontal-image-placeholder {
+            transform: scale(1.15) rotate(2deg);
+        }
+
+        .horizontal-image-placeholder {
+            font-size: 3rem;
+            display: inline-block;
+        }
+        
+        /* CONTEÚDO À DIREITA (Com fundo cinza claro) */
+        .horizontal-info {
+            width: 65%;
+            padding: 16px 20px 70px 20px; /* Adiciona padding inferior para dar espaço para o preço absoluto */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+            background-color: var(--bg-secondary); /* Fundo cinza claro igual à área da imagem */
+        }
+        
+        .horizontal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            text-align: left;
+        }
+        
+        .horizontal-tagline {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            line-height: 1.4;
+            margin-bottom: 12px;
+            text-align: left;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3; /* Adicionado para compatibilidade */
+            -webkit-box-orient: vertical;
+        }
+        
+        /* PREÇO E BOTÃO COMPRAR */
+        .horizontal-price-buy-row {
+            position: absolute;
+            bottom: 16px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .horizontal-price {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .horizontal-buy-btn {
+            background-color: var(--accent);
+            border: 1px solid var(--accent);
+            color: var(--bg-primary);
+            text-align: center;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: background-color var(--transition-fast), transform var(--transition-fast);
+        }
+        
+        .horizontal-card:hover .horizontal-buy-btn {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 1024px) {
+            .category-grid {
+                grid-template-columns: 1fr; /* 1 por linha em telas intermediárias se necessário, ou mantém 2 */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .category-grid {
+                grid-template-columns: 1fr; /* 1 por coluna em telas pequenas para manter o formato retangular de forma limpa */
+                gap: 16px;
+            }
+            
+            .horizontal-card {
+                height: auto;
+                min-height: auto;
+            }
+            
+            .horizontal-title {
+                font-size: 1.05rem;
+            }
+            
+            .horizontal-tagline {
+                font-size: 0.75rem;
+                -webkit-line-clamp: 2;
+                line-clamp: 2; /* Adicionado para compatibilidade */
+            }
+            
+            .horizontal-image-container {
+                width: 30%;
+                min-width: 90px;
+            }
+            
+            .horizontal-info {
+                width: 70%;
+                padding: 12px 12px 60px 12px;
+                background-color: var(--bg-secondary); /* Mantém fundo cinza claro no mobile */
+            }
+            
+            .horizontal-price-buy-row {
+                bottom: 12px;
+                left: 12px;
+                right: 12px;
+            }
+            
+            .horizontal-price {
+                font-size: 1rem;
+            }
+            
+            .horizontal-buy-btn {
+                padding: 6px 14px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cabeçalho (Header) -->
+    <header class="header" id="main-header">
+        <div class="header-container">
+            <!-- Logo -->
+            <a href="index.html" class="logo-container">
+                <img src="public/logotipo/logo.png?v=2" alt="Tela Celulares Logo" class="company-logo">
+            </a>
+            
+            <!-- Menu de Navegação -->
+            <nav class="nav-menu" id="nav-menu">
+                <ul>
+                    <li class="has-dropdown">
+                        <a href="index.html" class="nav-link">Loja</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="index.html#new-launch">Destaques</a></li>
+                            <li><a href="index.html#best-sellers">Mais Vendidos</a></li>
+                            <li><a href="#">Sobre Nós</a></li>
+                        </ul>
+                    </li>
+                    <li class="has-mega-dropdown">
+                        <a href="celulares.html" class="nav-link active">Celulares</a>
+                        <div class="mega-menu">
+                            <div class="mega-column">
+                                <h3 class="mega-column-title">Modelos Realme</h3>
+                                <ul>
+                                    <li><a href="celulares.html?cat=realme">Realme C85 (Destaque)</a></li>
+                                    <li><a href="celulares.html?cat=realme">Realme C85</a></li>
+                                    <li><a href="celulares.html?cat=realme">Realme Note 70</a></li>
+                                    <li><a href="celulares.html?cat=realme">Realme Note 60</a></li>
+                                    <li><a href="celulares.html?cat=realme">Realme Note 60x</a></li>
+                                    <li><a href="celulares.html?cat=realme">Realme C71</a></li>
+                                    <li><a href="celulares.html?cat=realme">Realme 14 5G</a></li>
+                                    <li><a href="celulares.html?cat=realme">Realme C100i</a></li>
+                                    <li><a href="celulares.html?cat=realme">Realme C75x</a></li>
+                                    <li><a href="celulares.html?cat=realme">Realme C75 256GB</a></li>
+                                </ul>
+                            </div>
+                            <div class="mega-column">
+                                <h3 class="mega-column-title">Modelos Redmi & Poco</h3>
+                                <ul>
+                                    <li><a href="celulares.html?cat=xiaomi">Redmi 15</a></li>
+                                    <li><a href="celulares.html?cat=xiaomi">Redmi 15C</a></li>
+                                    <li><a href="celulares.html?cat=xiaomi">Redmi A5</a></li>
+                                    <li><a href="celulares.html?cat=xiaomi">Poco X8 Pro</a></li>
+                                    <li><a href="celulares.html?cat=xiaomi">Poco X7 Pro</a></li>
+                                    <li><a href="celulares.html?cat=xiaomi">Redmi Note 15</a></li>
+                                    <li><a href="celulares.html?cat=xiaomi">Redmi Note 14</a></li>
+                                    <li><a href="celulares.html?cat=xiaomi">Xiaomi Redmi Note 15 Pro 512GB</a></li>
+                                </ul>
+                            </div>
+                            <div class="mega-column">
+                                <h3 class="mega-column-title">Outras Marcas & Clássicos</h3>
+                                <ul>
+                                    <li><a href="celulares.html?cat=entrada">Itel A70</a></li>
+                                    <li><a href="celulares.html?cat=entrada">Multi Up 4G</a></li>
+                                    <li><a href="celulares.html?cat=entrada">IPRO V20S (Flip)</a></li>
+                                    <li><a href="celulares.html?cat=entrada">Multi Up Play (Barrinha)</a></li>
+                                    <li><a href="celulares.html?cat=entrada">Nokia 110 4G (Barrinha)</a></li>
+                                    <li><a href="celulares.html?cat=entrada">Positivo P51 (Flip)</a></li>
+                                    <li><a href="celulares.html?cat=entrada">Cat B30 (Barrinha)</a></li>
+                                    <li><a href="celulares.html?cat=entrada">Motorola Moto E15</a></li>
+                                    <li><a href="celulares.html?cat=entrada">Itel P55+</a></li>
+                                    <li><a href="celulares.html?cat=entrada">Itel It8010</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li><a href="tablets.html" class="nav-link">Tablets</a></li>
+                    <li class="has-dropdown">
+                        <a href="baterias.html" class="nav-link">Power Bank</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="baterias.html">H'Maston YD80 30000mAh</a></li>
+                            <li><a href="baterias.html">Peining WUP-959 20000mAh</a></li>
+                            <li><a href="baterias.html">GOLD BTE-07B 10000mAh</a></li>
+                            <li><a href="baterias.html">GOLD Power Bank 10000mAh</a></li>
+                            <li><a href="baterias.html">GOLD Power Bank Bte-48a</a></li>
+                        </ul>
+                    </li>
+                    <li class="has-dropdown">
+                        <a href="audio.html" class="nav-link">Áudio</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="audio.html?cat=fones">Fones</a></li>
+                            <li><a href="audio.html?cat=caixas">Caixas de Som</a></li>
+                        </ul>
+                    </li>
+                    <li class="has-dropdown">
+                        <a href="acessorios.html" class="nav-link">Acessórios</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="acessorios.html?cat=peliculas">Películas</a></li>
+                            <li><a href="acessorios.html?cat=cases">Cases</a></li>
+                            <li><a href="acessorios.html?cat=carregadores">Carregadores</a></li>
+                            <li><a href="acessorios.html?cat=cabos">Cabos</a></li>
+                        </ul>
+                    </li>
+                    <li class="has-dropdown">
+                        <a href="informatica.html" class="nav-link">Informática</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="informatica.html?cat=teclados">Teclados</a></li>
+                            <li><a href="informatica.html?cat=mouse">Teclado e Mouse</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#" class="nav-link login-nav-item">Login</a></li>
+                </ul>
+            </nav>
+
+            <!-- Barra de Busca -->
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" placeholder="Buscar produtos..." id="search-input">
+                    <button class="btn-search" aria-label="Buscar">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ações Mobile -->
+            <div class="mobile-actions">
+                <a href="#" class="mobile-login-btn" aria-label="Login">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+                <button class="mobile-menu-toggle" id="mobile-toggle" aria-label="Menu">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12" class="line-mid"></line>
+                        <line x1="3" y1="6" x2="21" y2="6" class="line-top"></line>
+                        <line x1="3" y1="18" x2="21" y2="18" class="line-bot"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sub-Navegação por Categorias/Marcas -->
+    <div class="category-nav">
+        <div class="category-nav-container">
+            <button class="category-btn active" onclick="switchCategory('realme')">Linha Realme</button>
+            <button class="category-btn" onclick="switchCategory('xiaomi')">Linha Xiaomi / Poco / Redmi</button>
+            <button class="category-btn" onclick="switchCategory('entrada')">Celulares Básicos e Entrada</button>
+        </div>
+    </div>
+
+    <main class="section-container">
+        <!-- SEÇÃO REALME -->
+        <section id="realme" class="category-section active">
+            <h2 class="section-heading">Smartphones Realme</h2>
+            <div class="category-grid">
+                <!-- Realme C85 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Realme C85</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
+                                <span class="color-dot" style="background-color: #e5c158;" title="Dourado"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">256/8</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela IPS LCD 6.74" 90Hz</li>
+                            <li>Processador Unisoc T612 & 8GB RAM</li>
+                            <li>Bateria Titan de 7000mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 1.970,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20C85%20(256/8)%20por%20R$%201.970,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Realme Note 70 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Realme Note 70</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">256/8</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela IPS LCD 6.67" 90Hz</li>
+                            <li>Processador MediaTek Dimensity 6080</li>
+                            <li>Bateria de 5000mAh com Carga 33W</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 1.299,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20Note%2070%20(256/8)%20por%20R$%201.299,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Realme Note 60 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Realme Note 60</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #3e76a6;" title="Azul Escuro"></span>
+                                <span class="color-dot" style="background-color: #a9d5eb;" title="Azul Claro"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">128/4</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela IPS LCD 6.74" 90Hz</li>
+                            <li>Processador Unisoc T612</li>
+                            <li>Bateria de 5000mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 999,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20Note%2060%20(128/4)%20por%20R$%20999,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Realme Note 60x -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Realme Note 60x</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #a1e5d0;" title="Verde Menta"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">128/4</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela IPS LCD 6.72" 90Hz</li>
+                            <li>Processador Unisoc T612</li>
+                            <li>Bateria de 5000mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 999,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20Note%2060x%20(128/4)%20por%20R$%20999,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Realme C71 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Realme C71</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #1e4620;" title="Verde Floresta"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">128/4</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela IPS LCD 6.72" 90Hz</li>
+                            <li>Processador MediaTek Helio G85</li>
+                            <li>Bateria de 6000mAh com Carga 45W</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 1.285,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20C71%20(128/4)%20por%20R$%201.285,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Realme 14 5G -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Realme 14 5G</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #e0e0e0;" title="Prata"></span>
+                                <span class="color-dot" style="background-color: #3a3a3a;" title="Cinza Escuro"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">512/12</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela AMOLED 6.67" 120Hz</li>
+                            <li>Processador MediaTek Dimensity 7050 5G</li>
+                            <li>Bateria de 5000mAh com Carga 67W</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 2.390,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%2014%205G%20(512/12)%20por%20R$%202.390,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Realme C100i -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Realme C100i</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #7ea172;" title="Verde"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">128/4</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela IPS LCD 6.74" 90Hz</li>
+                            <li>Processador MediaTek Helio G85</li>
+                            <li>Bateria de 5000mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 1.459,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20C100i%20(128/4)%20por%20R$%201.459,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Realme C75x -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Realme C75x</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #e5c158;" title="Dourado"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">128/6</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela IPS LCD 6.72" 90Hz</li>
+                            <li>Processador MediaTek Helio G88</li>
+                            <li>Bateria de 6000mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 1.610,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20C75x%20(128/6)%20por%20R$%201.610,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Realme C75 x -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Realme C75 x</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">257/8</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela IPS LCD 6.72" 90Hz</li>
+                            <li>Processador MediaTek Helio G88</li>
+                            <li>Bateria de 6000mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 1.749,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20C75%20x%20(257/8)%20por%20R$%201.749,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO XIAOMI / POCO / REDMI -->
+        <section id="xiaomi" class="category-section">
+            <h2 class="section-heading">Linha Xiaomi, Poco & Redmi</h2>
+            <div class="category-grid">
+                <!-- Redmi 15 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Redmi 15</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">256/8</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela IPS LCD 6.88" 120Hz</li>
+                            <li>Processador Helio G81-Ultra & 8GB RAM</li>
+                            <li>Bateria Monstruosa 5160mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 1.555,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Redmi%2015%20(256/8)%20por%20R$%201.555,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Redmi 15C -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Redmi 15C</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
+                                <span class="color-dot" style="background-color: #2e4d3a;" title="Verde"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">256/8</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela IPS LCD 6.74" 90Hz</li>
+                            <li>Processador MediaTek Helio G85</li>
+                            <li>Bateria de 5000mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 1.549,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Redmi%2015C%20(256/8)%20por%20R$%201.549,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Redmi A5 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Redmi A5</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #a9d5eb;" title="Azul Claro"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">128/4</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela IPS LCD 6.52" 60Hz</li>
+                            <li>Processador MediaTek Helio G36</li>
+                            <li>Bateria de 5000mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 1.009,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Redmi%20A5%20(128/4)%20por%20R$%201.009,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Poco X8 Pro -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Poco X8 Pro</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #6e6e6e;" title="Cinza"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">512/12</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela AMOLED 6.67" 120Hz</li>
+                            <li>Processador MediaTek Dimensity 8300-Ultra</li>
+                            <li>Bateria Silicon-Carbon 5500mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 3.230,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Poco%20X8%20Pro%20(512/12)%20por%20R$%203.230,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Poco X7 Pro -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Poco X7 Pro</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #fff; border: 1px solid #ccc;" title="Branco"></span>
+                                <span class="color-dot" style="background-color: #f2c12e;" title="Amarelo"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">512/12</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela AMOLED 6.67" 120Hz</li>
+                            <li>Processador MediaTek Dimensity 8300-Ultra</li>
+                            <li>Bateria 5000mAh com Carga 67W</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 2.899,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Poco%20X7%20Pro%20(512/12)%20por%20R$%202.899,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Redmi Note 15 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Redmi Note 15</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #fff; border: 1px solid #ccc;" title="Branco"></span>
+                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">256/8</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela AMOLED 6.67" 120Hz</li>
+                            <li>Processador MediaTek Dimensity 6080</li>
+                            <li>Bateria de 5000mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 1.730,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Redmi%20Note%2015%20(256/8)%20por%20R$%201.730,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Redmi Note 14 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Redmi Note 14</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">256/8</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela AMOLED 6.67" 120Hz</li>
+                            <li>Processador MediaTek Dimensity 6080</li>
+                            <li>Bateria de 5000mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 1.690,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Redmi%20Note%2014%20(256/8)%20por%20R$%201.690,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO ENTRADA / OUTROS -->
+        <section id="entrada" class="category-section">
+            <h2 class="section-heading">Celulares Básicos e Entrada</h2>
+            <div class="category-grid">
+                <!-- Itel A70 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Itel A70</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
+                                <span class="color-dot" style="background-color: #e5c158;" title="Dourado"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">256/4</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela IPS LCD 6.6" 90Hz</li>
+                            <li>Processador Unisoc T603</li>
+                            <li>Bateria de 5000mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 890,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Itel%20A70%20(256/4)%20por%20R$%20890,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multi Up 4G -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Multi Up 4G</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                            </div>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Conectividade 4G Veloz</li>
+                            <li>Formato Compacto e Portátil</li>
+                            <li>Ideal para o dia a dia</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 350,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Multi%20Up%204G%20por%20R$%20350,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IPRO V20S (Flip) -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">IPRO V20S (Flip)</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #e5c158;" title="Dourado"></span>
+                            </div>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Formato Flip Clássico</li>
+                            <li>Conexão 4G LTE</li>
+                            <li>Teclado Físico Iluminado</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 350,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20IPRO%20V20S%20por%20R$%20350,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multi Up Play -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Multi Up Play (Barrinha)</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                            </div>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Modelo de Barrinha Clássico</li>
+                            <li>Conexão 3G / Rádio FM</li>
+                            <li>Lanterna Integrada</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 230,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Multi%20Up%20Play%20por%20R$%20230,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nokia 110 4G -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Nokia 110 4G (Barrinha)</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
+                            </div>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Conectividade 4G LTE</li>
+                            <li>Bateria Nokia de Longa Duração</li>
+                            <li>Rádio FM & Lanterna</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 270,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Nokia%20110%204G%20por%20R$%20270,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Positivo P51 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Positivo P51 (Flip)</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #c92a2a;" title="Vermelho"></span>
+                            </div>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Formato Flip Clássico</li>
+                            <li>Tela Colorida Prática</li>
+                            <li>Botão de Emergência SOS</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 350,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Positivo%20P51%20por%20R$%20350,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cat B30 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Cat B30 (Barrinha)</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                            </div>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Resistência Militar Certificada</li>
+                            <li>À prova de Poeira e Quedas</li>
+                            <li>Lanterna Potente</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 350,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Cat%20B30%20por%20R$%20350,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Motorola Moto E15 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Motorola Moto E15</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #3e3e3e;" title="Cinza"></span>
+                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
+                            </div>
+                        </div>
+                        <div class="storage-selector">
+                            <span class="storage-badge active">64/4</span>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Tela Max Vision 6.1"</li>
+                            <li>Câmera AI de 13MP</li>
+                            <li>Bateria de 3000mAh</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 930,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Motorola%20Moto%20E15%20(64/4)%20por%20R$%20930,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Itel P55+ -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Itel P55+</h3>
+                        <div class="color-selector">
+                            <span>Cor: Escolha uma cor</span>
+                            <div class="color-dots">
+                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
+                                <span class="color-dot" style="background-color: #e5c158;" title="Dourado"></span>
+                            </div>
+                        </div>
+                        <ul class="spec-list">
+                            <li>Carregamento Rápido 45W</li>
+                            <li>Tela 90Hz Fluida</li>
+                            <li>Câmera AI 50MP</li>
+                        </ul>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 799,00</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Itel%20P55+%20por%20R$%20799,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Itel It8010 -->
+                <div class="horizontal-card">
+                    <div class="horizontal-image-container">
+                        <span class="horizontal-image-placeholder">📱</span>
+                    </div>
+                    <div class="horizontal-info">
+                        <h3 class="horizontal-title">Itel It8010</h3>
+                        <p class="horizontal-tagline">Compacto e Durável para Comunicação Rápida</p>
+                        <div class="horizontal-price-buy-row">
+                            <span class="horizontal-price">R$ 1.000</span>
+                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Itel%20It8010%20por%20R$%201.000" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Rodapé (Footer) -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <!-- Coluna 1: Produtos -->
+                <div class="footer-col">
+                    <h4>Produtos</h4>
+                    <ul>
+                        <li><a href="celulares.html">Série P</a></li>
+                        <li><a href="celulares.html">Série GT</a></li>
+                        <li><a href="celulares.html">Série Narzo</a></li>
+                        <li><a href="#">Áudio & Vestíveis</a></li>
+                        <li><a href="#">Acessórios</a></li>
+                    </ul>
+                </div>
+
+                <!-- Coluna 2: Suporte -->
+                <div class="footer-col">
+                    <h4>Suporte</h4>
+                    <ul>
+                        <li><a href="https://wa.me/5517997559675" target="_blank" rel="noopener noreferrer">Fale Conosco</a></li>
+                        <li><a href="#">Centros de Serviço</a></li>
+                        <li><a href="#">Manual do Usuário</a></li>
+                        <li><a href="#">Políticas de Garantia</a></li>
+                        <li><a href="#">Declaração de Conformidade</a></li>
+                    </ul>
+                </div>
+
+                <!-- Coluna 3: Tela Celulares -->
+                <div class="footer-col">
+                    <h4>Tela Celulares</h4>
+                    <ul>
+                        <li><a href="#">Nossa História</a></li>
+                        <li><a href="#">Tecnologia AI</a></li>
+                        <li><a href="#">Sala de Imprensa</a></li>
+                        <li><a href="#">Trabalhe Conosco</a></li>
+                    </ul>
+                </div>
+
+                <!-- Coluna 4: Contato -->
+                <div class="footer-col footer-contact-col">
+                    <h4>Atendimento</h4>
+                    <p class="support-phone"><a href="https://wa.me/5517997559675" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">(17) 99755-9675</a></p>
+                    <p class="support-hours">Seg - Sáb: 09:00 - 18:00 (Exceto Feriados)</p>
+                    <a href="https://wa.me/5517997559675" class="btn-footer-chat" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 8px;">
+                            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+                        </svg>
+                        Suporte por Chat
+                    </a>
+                </div>
+            </div>
+
+            <!-- Rodapé Inferior -->
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2026 Tela Celulares. Todos os direitos reservados.</p>
+                </div>
+                <div class="footer-socials">
+                    <a href="#" aria-label="Facebook">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.14H5.71v4.78H9.5v11.26h5V12.24h3.85l.42-4.78z"/></svg>
+                    </a>
+                    <a href="#" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </a>
+                    <a href="#" aria-label="X">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botão Flutuante do WhatsApp -->
+    <a href="https://wa.me/5517997559675" class="whatsapp-btn" target="_blank" rel="noopener noreferrer" aria-label="Fale conosco no WhatsApp">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+            <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.333 4.982L2 22l5.233-1.371a9.994 9.994 0 0 0 4.773 1.226h.004c5.507 0 9.989-4.478 9.99-9.984 0-2.669-1.037-5.176-2.923-7.062A9.923 9.923 0 0 0 12.012 2zm5.836 14.186c-.255.722-1.5 1.353-2.077 1.44-.52.078-1.198.144-1.923-.092-2.834-.925-4.834-3.743-4.975-3.931-.142-.187-1.157-1.536-1.157-2.93 0-1.393.73-2.076.99-2.353.259-.276.568-.346.757-.346h.54c.174 0 .393-.066.611.46.223.538.763 1.859.83 1.992.067.133.111.288.022.466-.089.178-.133.288-.266.444-.133.156-.279.349-.398.47-.133.134-.274.28-.119.547.156.267.693 1.139 1.488 1.841.972.859 1.791 1.127 2.052 1.258.261.131.411.11.565-.067.153-.178.665-.776.843-1.042.178-.266.355-.222.6-.133s1.554.73 1.821.864c.266.133.444.2.51.311.066.111.066.643-.189 1.365z"/>
+        </svg>
+        <span class="pulse-ring"></span>
+    </a>
+
+    <!-- Scripts e Lógica de Alternância -->
+    <script src="app.js"></script>
+    <script>
+        function switchCategory(catId) {
+            // Remove active de todos os botões e seções
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.category-section').forEach(sec => sec.classList.remove('active'));
+            
+            // Adiciona active no botão clicado e na seção correspondente
+            event.currentTarget.classList.add('active');
+            document.getElementById(catId).classList.add('active');
+        }
+
+        // Interatividade de seleção de cores
+        document.querySelectorAll('.color-dot').forEach(dot => {
+            dot.addEventListener('click', function() {
+                const parent = this.closest('.color-dots');
+                parent.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Atualiza o texto "Cor: ..."
+                const label = this.closest('.color-selector').querySelector('span');
+                const colorName = this.getAttribute('title');
+                label.textContent = `Cor: ${colorName}`;
+            });
+        });
+
+        // Interatividade de seleção de capacidade
+        document.querySelectorAll('.storage-badge').forEach(badge => {
+            badge.addEventListener('click', function() {
+                const parent = this.closest('.storage-selector');
+                parent.querySelectorAll('.storage-badge').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
