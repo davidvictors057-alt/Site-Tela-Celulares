@@ -50,7 +50,7 @@ Para manter a consistência do design premium, dinâmico e tecnológico inspirad
 1. **Cabeçalho (Global Navigation):** Fundo escuro com logo à esquerda, links centralizados em cinza (hover em amarelo/branco) e barra de busca integrada à direita.
 2. **Carrossel Hero (Destaque principal):** Altura ampla com banners publicitários vibrantes apresentando o modelo em destaque, indicadores de paginação circulares na base e chevrons de paginação lateral.
 3. **Barra de Acesso Rápido (Categorias):** Fileira horizontal com ícones circulares e títulos de navegação rápida (Telefone, Classificação, realme Care+, VIP, Promoção Relâmpago).
-4. **Novos Lançamentos (New Launch):** Bloco estendido exibindo o lançamento de maior destaque recente (ex. realme P4R 5G) com CTAs dedicados de "Buy Now" ou "Learn More".
+4. **Novos Lançamentos (New Launch):** Bloco estendido exibindo o lançamento de maior destaque recente (ex. Realme C85) com CTAs dedicados de "Buy Now" ou "Learn More".
 5. **Grids de Produtos (Cards):** Divisão por abas/linhas temáticas de forma limpa (Best Sellers, P Series, GT Series, Number Series) com imagens em alta definição, título, preço com desconto (amarelo) e preço original riscado.
 6. **Slider de Acessórios:** Seção horizontal deslizável apresentando fones de ouvido (como realme Buds T500 Pro, Air8), smartwatches e tablets.
 7. **Rodapé Escuro (Footer):** Cor de fundo `#121212` ou `#000000`. Menu com links em colunas organizadas (Produtos, Programas, Apoiar, Sobre a realme). Destaque para o botão de Suporte por Chat (`bg-white` com texto escuro) e telefone de suporte, seguidos por ícones de redes sociais e atalho para download do aplicativo.

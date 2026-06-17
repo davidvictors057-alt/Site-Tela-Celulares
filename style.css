@@ -600,21 +600,29 @@ button {
 .nav-icon-wrapper {
     width: 56px;
     height: 56px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-secondary);
-    transition: transform var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+    transition: transform var(--transition-fast), color var(--transition-fast);
 }
 
 .quick-nav-item:hover .nav-icon-wrapper {
     transform: translateY(-4px);
     color: var(--accent);
-    border-color: var(--accent);
-    background-color: rgba(242, 92, 5, 0.05);
+}
+
+.nav-icon-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform var(--transition-fast), filter var(--transition-fast);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.08));
+}
+
+.quick-nav-item:hover .nav-icon-wrapper img {
+    transform: scale(1.12);
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.15));
 }
 
 .nav-title {
@@ -720,6 +728,31 @@ button {
     font-size: 0.95rem;
     margin-bottom: 24px;
     font-weight: 300;
+}
+
+.launch-specs {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+    width: 100%;
+}
+
+.launch-specs li {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 400;
+}
+
+.launch-specs li::before {
+    content: "•";
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-right: 4px;
 }
 
 .launch-pricing {
