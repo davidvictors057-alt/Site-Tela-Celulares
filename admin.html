@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Tela Celulares</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos globais e painel admin -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="admin-page-body">
+
+    <!-- Cabeçalho Fixo Administrativo -->
+    <header class="admin-header">
+        <div class="admin-header-container">
+            <div class="admin-logo">
+                Tela Celulares <span>Painel</span>
+            </div>
+            
+            <div class="admin-nav-actions">
+                <a href="index.html" class="btn-admin-nav back">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Voltar ao Site
+                </a>
+                <button id="admin-logout-btn" class="btn-admin-nav logout">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Sair
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="admin-main">
+        <!-- LADO ESQUERDO: Cadastrar / Editar Produto -->
+        <section class="admin-card">
+            <h2 class="admin-card-title" id="form-title">Cadastrar Novo Produto</h2>
+            <form id="admin-product-form" class="admin-form">
+                <!-- ID oculto para controle de edição -->
+                <input type="hidden" id="product-id">
+
+                <div class="form-group-admin">
+                    <label for="prod-name">Nome do Produto</label>
+                    <input type="text" id="prod-name" required placeholder="Ex: Realme C85 (256/8GB)">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group-admin">
+                        <label for="prod-category">Categoria</label>
+                        <select id="prod-category" required>
+                            <option value="" disabled selected>Selecione...</option>
+                            <option value="celulares">Celulares</option>
+                            <option value="tablets">Tablets</option>
+                            <option value="baterias">Power Bank</option>
+                            <option value="audio">Áudio</option>
+                            <option value="acessorios">Acessórios</option>
+                            <option value="informatica">Informática</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group-admin">
+                        <label for="prod-subcategory">Subcategoria</label>
+                        <select id="prod-subcategory">
+                            <option value="">Nenhuma</option>
+                            <option value="realme">Realme</option>
+                            <option value="xiaomi">Xiaomi/Redmi/Poco</option>
+                            <option value="entrada">Outras Marcas/Entrada</option>
+                            <option value="fones">Fones de Ouvido</option>
+                            <option value="caixas">Caixas de Som</option>
+                            <option value="peliculas">Películas</option>
+                            <option value="cases">Cases</option>
+                            <option value="carregadores">Carregadores</option>
+                            <option value="cabos">Cabos</option>
+                            <option value="teclados">Teclados</option>
+                            <option value="mouse">Mouse</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group-admin">
+                    <label for="prod-desc">Descrição / Especificação Breve</label>
+                    <textarea id="prod-desc" required placeholder="Ex: Processador Unisoc T612, Bateria Titan de 7000mAh, Tela IPS 90Hz"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group-admin">
+                        <label for="prod-price">Preço Promocional (R$)</label>
+                        <input type="number" id="prod-price" step="0.01" required placeholder="1299.00">
+                    </div>
+
+                    <div class="form-group-admin">
+                        <label for="prod-original-price">Preço Original (R$ - Opcional)</label>
+                        <input type="number" id="prod-original-price" step="0.01" placeholder="1599.00">
+                    </div>
+                </div>
+
+                <!-- Especificações Opcionais (Gigas, RAM, Cores) -->
+                <div class="admin-card-title" style="font-size: 0.95rem; margin: 10px 0 5px 0; padding-bottom: 5px;">Especificações Adicionais</div>
+                
+                <div class="form-row">
+                    <div class="form-group-admin">
+                        <label for="spec-storage">Armazenamento (GB)</label>
+                        <input type="text" id="spec-storage" placeholder="Ex: 256GB, 128GB">
+                    </div>
+
+                    <div class="form-group-admin">
+                        <label for="spec-ram">Memória RAM</label>
+                        <input type="text" id="spec-ram" placeholder="Ex: 8GB, 4GB">
+                    </div>
+                </div>
+
+                <div class="form-group-admin">
+                    <label for="spec-colors">Cores Disponíveis (Separadas por vírgula)</label>
+                    <input type="text" id="spec-colors" placeholder="Ex: Preto, Azul, Dourado">
+                </div>
+
+                <div class="form-group-admin form-checkbox-group">
+                    <input type="checkbox" id="prod-best-seller">
+                    <label for="prod-best-seller">Exibir no Carrossel "Mais Vendidos"</label>
+                </div>
+
+                <!-- Imagem do Produto com Processador de Fundo Branco -->
+                <div class="form-group-admin">
+                    <label>Imagem do Produto (Será processada e comprimida)</label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="prod-image-file" accept="image/*">
+                        <div class="file-upload-info">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <span>Selecione a foto do produto</span>
+                            <small>Fundo branco será removido automaticamente. Limite máximo: 200KB.</small>
+                        </div>
+                    </div>
+
+                    <!-- Bloco de progresso / preview da imagem -->
+                    <div class="image-processing-preview" id="preview-panel">
+                        <div class="image-preview-container">
+                            <div class="image-preview-box">
+                                <img id="preview-img-tag" src="" alt="Preview">
+                            </div>
+                            <div class="image-processing-details">
+                                <strong>Status do Arquivo:</strong>
+                                <span class="status-badge-processing" id="processing-status-badge">Aguardando...</span>
+                                <span id="processing-size-info">Tamanho: 0 KB</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit-form" id="btn-save-product">Cadastrar Produto</button>
+                <button type="button" class="btn-cancel-edit" id="btn-cancel-edit" style="display: none;">Cancelar Edição</button>
+            </form>
+        </section>
+
+        <!-- LADO DIREITO: Listagem e Edição de Produtos -->
+        <section class="admin-card" style="overflow: hidden;">
+            <h2 class="admin-card-title">Gerenciar Produtos Cadastrados</h2>
+            
+            <div class="admin-table-container">
+                <table class="admin-table" id="products-table">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Preço</th>
+                            <th>Mais Vendido</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body">
+                        <!-- Carregado via Javascript -->
+                        <tr>
+                            <td colspan="4" class="admin-no-products">Buscando produtos no Supabase...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts de Controle -->
+    <script src="admin.js"></script>
+</body>
+
+</html>

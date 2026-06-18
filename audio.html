@@ -19,6 +19,9 @@
 
     <!-- Estilos globais e componentes -->
     <link rel="stylesheet" href="style.css">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="dynamic-loader.js"></script>
     
     <style>
         /* Estilos específicos para a página de categorias */
@@ -352,7 +355,7 @@
                             <li><a href="informatica.html?cat=mouse">Teclado e Mouse</a></li>
                         </ul>
                     </li>
-                    <li><a href="#" class="nav-link login-nav-item">Login</a></li>
+                    <li><a href="index.html?login=true" class="nav-link login-nav-item">Login</a></li>
                 </ul>
             </nav>
 
@@ -371,7 +374,7 @@
 
             <!-- Ações Mobile -->
             <div class="mobile-actions">
-                <a href="#" class="mobile-login-btn" aria-label="Login">
+                <a href="index.html?login=true" class="mobile-login-btn" aria-label="Login">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>

@@ -19,6 +19,8 @@
 
     <!-- Estilos globais e componentes -->
     <link rel="stylesheet" href="style.css">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -125,7 +127,7 @@
                             <li><a href="informatica.html?cat=mouse">Teclado e Mouse</a></li>
                         </ul>
                     </li>
-                    <li><a href="#" class="nav-link login-nav-item">Login</a></li>
+                    <li><a href="#" class="nav-link login-nav-item login-trigger">Login</a></li>
                 </ul>
             </nav>
 
@@ -145,7 +147,7 @@
 
             <!-- Ações Mobile (Login e Menu Hambúrguer na Direita) -->
             <div class="mobile-actions">
-                <a href="#" class="mobile-login-btn" aria-label="Login">
+                <a href="#" class="mobile-login-btn login-trigger" aria-label="Login">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -171,10 +173,28 @@
                 <!-- Slides -->
                 <div class="carousel-slides">
                     <div class="carousel-slide active" data-index="0" style="background-color: #ffffff;">
-                        <a href="#" style="width:100%; height:100%; display:block;"><img src="public/carousel/banner1.png" alt="Realme Note 60x 32:9"></a>
+                        <a href="#" style="width:100%; height:100%; display:block;"><img src="public/carousel/banner1.jpg" alt="Realme Note 60x 32:9"></a>
                     </div>
                     <div class="carousel-slide" data-index="1" style="background-color: #ffffff;">
-                        <a href="#" style="width:100%; height:100%; display:block;"><img src="public/carousel/banner2.png" alt="Realme C85 32:9"></a>
+                        <a href="#" style="width:100%; height:100%; display:block;"><img src="public/carousel/banner2.jpg" alt="Realme C85 32:9"></a>
+                    </div>
+                    <div class="carousel-slide" data-index="2" style="background-color: #ffffff;">
+                        <a href="#" style="width:100%; height:100%; display:block;"><img src="public/carousel/banner3.jpg" alt="Loja Note 70"></a>
+                    </div>
+                    <div class="carousel-slide" data-index="3" style="background-color: #ffffff;">
+                        <a href="#" style="width:100%; height:100%; display:block;"><img src="public/carousel/banner4.jpg" alt="Banner 4"></a>
+                    </div>
+                    <div class="carousel-slide" data-index="4" style="background-color: #ffffff;">
+                        <a href="#" style="width:100%; height:100%; display:block;"><img src="public/carousel/banner5.jpg" alt="Banner 5"></a>
+                    </div>
+                    <div class="carousel-slide" data-index="5" style="background-color: #ffffff;">
+                        <a href="#" style="width:100%; height:100%; display:block;"><img src="public/carousel/banner6.jpg" alt="Banner 6"></a>
+                    </div>
+                    <div class="carousel-slide" data-index="6" style="background-color: #ffffff;">
+                        <a href="#" style="width:100%; height:100%; display:block;"><img src="public/carousel/banner7.jpg" alt="Banner 7"></a>
+                    </div>
+                    <div class="carousel-slide" data-index="7" style="background-color: #ffffff;">
+                        <a href="#" style="width:100%; height:100%; display:block;"><img src="public/carousel/banner8.jpg" alt="Banner 8"></a>
                     </div>
                 </div>
 
@@ -186,6 +206,12 @@
                 <div class="carousel-dots" id="carousel-dots">
                     <span class="dot active" data-index="0"></span>
                     <span class="dot" data-index="1"></span>
+                    <span class="dot" data-index="2"></span>
+                    <span class="dot" data-index="3"></span>
+                    <span class="dot" data-index="4"></span>
+                    <span class="dot" data-index="5"></span>
+                    <span class="dot" data-index="6"></span>
+                    <span class="dot" data-index="7"></span>
                 </div>
             </div>
         </section>
@@ -270,54 +296,159 @@
         <section class="section-container" id="best-sellers">
             <h2 class="section-heading">Mais Vendidos</h2>
 
-            <div class="products-grid">
-                <!-- Card principal de destaque (Realme Note 70) -->
-                <div class="product-card featured-card">
-                    <div class="product-image-container">
-                        <img src="public/carousel/realme_note70.png" alt="Realme Note 70">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Realme Note 70</h3>
-                        <p class="product-tagline">Dimensity 6080 & Carga 33W</p>
-                        <div class="product-price">
-                            <span class="price-discount">R$ 1.299</span>
-                            <span class="price-original">R$ 1.599</span>
+            <div class="best-sellers-carousel-wrapper">
+                <div class="best-sellers-carousel-viewport" id="best-sellers-viewport">
+                    <div class="best-sellers-carousel-track" id="best-sellers-track">
+                        <!-- Card 1 (Realme Note 70) -->
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="public/carousel/realme_note70.png" alt="Realme Note 70">
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">Realme Note 70</h3>
+                                <p class="product-tagline">Dimensity 6080 & Carga 33W</p>
+                                <div class="product-price">
+                                    <span class="price-discount">R$ 1.299</span>
+                                    <span class="price-original">R$ 1.599</span>
+                                </div>
+                                <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20Note%2070%20(256/8)%20por%20R$%201.299,00" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
+                            </div>
                         </div>
-                        <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20Note%2070%20(256/8)%20por%20R$%201.299,00" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
-                    </div>
-                </div>
 
-                <!-- Card secundário 1 (Realme Note 60) -->
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="public/carousel/realme_note60_best_seller.png" alt="Realme Note 60">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Realme Note 60</h3>
-                        <p class="product-tagline">Processador Unisoc T612</p>
-                        <div class="product-price">
-                            <span class="price-discount">R$ 999</span>
-                            <span class="price-original">R$ 1.299</span>
+                        <!-- Card 2 (Realme Note 60) -->
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="public/carousel/realme_note60_best_seller.png" alt="Realme Note 60">
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">Realme Note 60</h3>
+                                <p class="product-tagline">Processador Unisoc T612</p>
+                                <div class="product-price">
+                                    <span class="price-discount">R$ 999</span>
+                                    <span class="price-original">R$ 1.299</span>
+                                </div>
+                                <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20Note%2060%20(128/4)%20por%20R$%20999,00" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
+                            </div>
                         </div>
-                        <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20Note%2060%20(128/4)%20por%20R$%20999,00" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
-                    </div>
-                </div>
 
-                <!-- Card secundário 2 (Realme C85) -->
-                <div class="product-card">
-                    <div class="product-image-container">
-                        <img src="public/carousel/realme_c85_best_seller.png" alt="Realme C85">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Realme C85</h3>
-                        <p class="product-tagline">Bateria Titan de 7000mAh</p>
-                        <div class="product-price">
-                            <span class="price-discount">R$ 1.970</span>
-                            <span class="price-original">R$ 2.499</span>
+                        <!-- Card 3 (Realme C85) -->
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="public/carousel/realme_c85_best_seller.png" alt="Realme C85">
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">Realme C85</h3>
+                                <p class="product-tagline">Bateria Titan de 7000mAh</p>
+                                <div class="product-price">
+                                    <span class="price-discount">R$ 1.970</span>
+                                    <span class="price-original">R$ 2.499</span>
+                                </div>
+                                <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20C85%20(256/8)%20por%20R$%201.970,00" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
+                            </div>
                         </div>
-                        <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20C85%20(256/8)%20por%20R$%201.970,00" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
+
+                        <!-- Card 4 (Realme 14 5G) -->
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="public/Cell/Realme 14 5G.webp" alt="Realme 14 5G">
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">Realme 14 5G</h3>
+                                <p class="product-tagline">AMOLED 120Hz & Dimensity 7050</p>
+                                <div class="product-price">
+                                    <span class="price-discount">R$ 2.390</span>
+                                    <span class="price-original">R$ 2.899</span>
+                                </div>
+                                <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%2014%205G%20(512/12)%20por%20R$%202.390,00" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 5 (Realme C100i) -->
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="public/Cell/Realme C100i.png" alt="Realme C100i">
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">Realme C100i</h3>
+                                <p class="product-tagline">Helio G85 & Bateria 5000mAh</p>
+                                <div class="product-price">
+                                    <span class="price-discount">R$ 1.459</span>
+                                    <span class="price-original">R$ 1.799</span>
+                                </div>
+                                <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20C100i%20(128/4)%20por%20R$%201.459,00" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 6 (Realme C71) -->
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="public/Cell/realme-C71.jpg" alt="Realme C71">
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">Realme C71</h3>
+                                <p class="product-tagline">Bateria 6000mAh & Helio G85</p>
+                                <div class="product-price">
+                                    <span class="price-discount">R$ 1.285</span>
+                                    <span class="price-original">R$ 1.599</span>
+                                </div>
+                                <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Realme%20C71%20(128/4)%20por%20R$%201.285,00" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 7 (Redmi 15C) -->
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="public/Cell/redmi 15c.webp" alt="Redmi 15C">
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">Redmi 15C</h3>
+                                <p class="product-tagline">Processador Helio G85 & 256GB</p>
+                                <div class="product-price">
+                                    <span class="price-discount">R$ 1.549</span>
+                                    <span class="price-original">R$ 1.899</span>
+                                </div>
+                                <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Redmi%2015C%20(256/8)%20por%20R$%201.549,00" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 8 (Poco X8 Pro) -->
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="public/Cell/Poco x8 pro.png" alt="Poco X8 Pro">
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">Poco X8 Pro</h3>
+                                <p class="product-tagline">Dimensity 8300-Ultra & 512GB</p>
+                                <div class="product-price">
+                                    <span class="price-discount">R$ 3.230</span>
+                                    <span class="price-original">R$ 3.899</span>
+                                </div>
+                                <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Poco%20X8%20Pro%20(512/12)%20por%20R$%203.230,00" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
+                            </div>
+                        </div>
+
+                        <!-- Card 9 (Positivo P51 (Flip)) -->
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="public/Cell/Positivo P51.webp" alt="Positivo P51">
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">Positivo P51</h3>
+                                <p class="product-tagline">Formato Flip & Botão SOS</p>
+                                <div class="product-price">
+                                    <span class="price-discount">R$ 350</span>
+                                    <span class="price-original">R$ 499</span>
+                                </div>
+                                <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Positivo%20P51%20por%20R$%20350,00" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
+                            </div>
                     </div>
                 </div>
+                <!-- Controles de Carrossel -->
+                <button class="carousel-control-btn prev" id="best-sellers-prev" aria-label="Anterior">&#10094;</button>
+                <button class="carousel-control-btn next" id="best-sellers-next" aria-label="Próximo">&#10095;</button>
+                
+                <!-- Indicadores -->
+                <div class="best-sellers-carousel-dots" id="best-sellers-dots"></div>
             </div>
         </section>
     </main>
@@ -330,52 +461,91 @@
                 <div class="footer-col">
                     <h4>Produtos</h4>
                     <ul>
-                        <li><a href="#">Série P</a></li>
-                        <li><a href="#">Série GT</a></li>
-                        <li><a href="#">Série Narzo</a></li>
-                        <li><a href="#">Áudio & Vestíveis</a></li>
-                        <li><a href="#">Acessórios</a></li>
+                        <li><a href="celulares.html">Celulares</a></li>
+                        <li><a href="tablets.html">Tablets</a></li>
+                        <li><a href="baterias.html">Power Bank</a></li>
+                        <li class="footer-sub-group">
+                            <span class="footer-sub-label">Áudio</span>
+                            <ul class="footer-sub-list">
+                                <li><a href="audio.html?cat=fones">Fones de Ouvido</a></li>
+                                <li><a href="audio.html?cat=caixas">Caixas de Som</a></li>
+                            </ul>
+                        </li>
+                        <li class="footer-sub-group">
+                            <span class="footer-sub-label">Acessórios</span>
+                            <ul class="footer-sub-list">
+                                <li><a href="acessorios.html?cat=peliculas">Películas</a></li>
+                                <li><a href="acessorios.html?cat=cases">Cases</a></li>
+                                <li><a href="acessorios.html?cat=carregadores">Carregadores</a></li>
+                                <li><a href="acessorios.html?cat=cabos">Cabos</a></li>
+                            </ul>
+                        </li>
+                        <li class="footer-sub-group">
+                            <span class="footer-sub-label">Informática</span>
+                            <ul class="footer-sub-list">
+                                <li><a href="informatica.html?cat=teclados">Teclados</a></li>
+                                <li><a href="informatica.html?cat=mouse">Teclado e Mouse</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
 
-                <!-- Coluna 2: Suporte -->
-                <div class="footer-col">
-                    <h4>Suporte</h4>
-                    <ul>
-                        <li><a href="https://wa.me/5517997559675" target="_blank" rel="noopener noreferrer">Fale
-                                Conosco</a></li>
-                        <li><a href="#">Centros de Serviço</a></li>
-                        <li><a href="#">Manual do Usuário</a></li>
-                        <li><a href="#">Políticas de Garantia</a></li>
-                        <li><a href="#">Declaração de Conformidade</a></li>
-                    </ul>
-                </div>
-
-                <!-- Coluna 3: Tela Celulares -->
+                <!-- Coluna 2: Tela Celulares -->
                 <div class="footer-col">
                     <h4>Tela Celulares</h4>
                     <ul>
-                        <li><a href="#">Nossa História</a></li>
-                        <li><a href="#">Tecnologia AI</a></li>
-                        <li><a href="#">Sala de Imprensa</a></li>
-                        <li><a href="#">Trabalhe Conosco</a></li>
+                        <li><a href="#" id="footer-sobre-nos-btn">Nossa História</a></li>
+                        <li><a href="https://wa.me/5517997559675" target="_blank" rel="noopener noreferrer">Fale Conosco</a></li>
+                        <li><a href="https://wa.me/5517997559675?text=Quero%20fazer%20um%20orçamento" target="_blank" rel="noopener noreferrer">Orçamentos</a></li>
+                        <li><a href="https://wa.me/5517997559675?text=Preciso%20de%20assistência%20técnica" target="_blank" rel="noopener noreferrer">Assistência Técnica</a></li>
                     </ul>
+                    <!-- Botão Como Chegar destacado -->
+                    <a href="https://share.google/zBLTr6bKNqmmjlqNl" class="btn-footer-map" target="_blank" rel="noopener noreferrer" aria-label="Como chegar à Tela Celulares">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; flex-shrink:0;">
+                            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                        </svg>
+                        Como Chegar
+                    </a>
                 </div>
 
-                <!-- Coluna 4: Contato & App -->
+                <!-- Coluna 3: Atendimento -->
                 <div class="footer-col footer-contact-col">
                     <h4>Atendimento</h4>
                     <p class="support-phone"><a href="https://wa.me/5517997559675" target="_blank"
                             rel="noopener noreferrer" style="color: inherit; text-decoration: none;">(17) 99755-9675</a>
                     </p>
-                    <p class="support-hours">Seg - Sáb: 09:00 - 18:00 (Exceto Feriados)</p>
+                    <div class="support-schedule">
+                        <p class="support-hours">
+                            <span class="schedule-day">Segunda a Sexta</span>
+                            <span class="schedule-time">07:30 às 18:30</span>
+                        </p>
+                        <p class="support-hours">
+                            <span class="schedule-day">Sábados</span>
+                            <span class="schedule-time">08:00 às 14:00</span>
+                        </p>
+                    </div>
+                    <address class="footer-address">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" style="flex-shrink:0; margin-top:2px;">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        <span>Av. Dep. Áureo Ferreira, 1275<br>Vila Recanto das Águas<br>CEP: 15.503-415</span>
+                    </address>
                     <a href="https://wa.me/5517997559675" class="btn-footer-chat" target="_blank"
                         rel="noopener noreferrer">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 8px;">
                             <path
-                                d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z" />
+                                d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.333 4.982L2 22l5.233-1.371a9.994 9.994 0 0 0 4.773 1.226h.004c5.507 0 9.989-4.478 9.99-9.984 0-2.669-1.037-5.176-2.923-7.062A9.923 9.923 0 0 0 12.012 2z" />
                         </svg>
-                        Suporte por Chat
+                        Falar no WhatsApp
+                    </a>
+                    <!-- Botão Instagram do cliente -->
+                    <a href="https://www.instagram.com/telacelulares?igsh=MThxbXM0ajUyY3Ribg==" class="btn-footer-instagram" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                        Seguir no Instagram
                     </a>
                 </div>
             </div>
@@ -386,24 +556,20 @@
                     <p>&copy; 2026 Tela Celulares. Todos os direitos reservados.</p>
                 </div>
                 <div class="footer-socials">
-                    <a href="#" aria-label="Facebook">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path
-                                d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.14H5.71v4.78H9.5v11.26h5V12.24h3.85l.42-4.78z" />
-                        </svg>
-                    </a>
-                    <a href="#" aria-label="Instagram">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                        </svg>
-                    </a>
-                    <a href="#" aria-label="X (Twitter)">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path
-                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    <a href="https://www.instagram.com/telacelulares?igsh=MThxbXM0ajUyY3Ribg==" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <defs>
+                                <radialGradient id="instagram-grad" cx="30%" cy="107%" r="90%">
+                                    <stop offset="0%" stop-color="#fdf497" />
+                                    <stop offset="5%" stop-color="#fdf497" />
+                                    <stop offset="45%" stop-color="#fd5949" />
+                                    <stop offset="60%" stop-color="#d6249f" />
+                                    <stop offset="90%" stop-color="#285AEB" />
+                                </radialGradient>
+                            </defs>
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="url(#instagram-grad)" stroke-width="2"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="none" stroke="url(#instagram-grad)" stroke-width="2"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="url(#instagram-grad)" stroke-width="2"></line>
                         </svg>
                     </a>
                 </div>
@@ -411,15 +577,184 @@
         </div>
     </footer>
 
-    <!-- Botão Flutuante do WhatsApp -->
-    <a href="https://wa.me/5517997559675" class="whatsapp-btn" target="_blank" rel="noopener noreferrer"
-        aria-label="Fale conosco no WhatsApp">
-        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
-            <path
-                d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.333 4.982L2 22l5.233-1.371a9.994 9.994 0 0 0 4.773 1.226h.004c5.507 0 9.989-4.478 9.99-9.984 0-2.669-1.037-5.176-2.923-7.062A9.923 9.923 0 0 0 12.012 2zm5.836 14.186c-.255.722-1.5 1.353-2.077 1.44-.52.078-1.198.144-1.923-.092-2.834-.925-4.834-3.743-4.975-3.931-.142-.187-1.157-1.536-1.157-2.93 0-1.393.73-2.076.99-2.353.259-.276.568-.346.757-.346h.54c.174 0 .393-.066.611.46.223.538.763 1.859.83 1.992.067.133.111.288.022.466-.089.178-.133.288-.266.444-.133.156-.279.349-.398.47-.133.134-.274.28-.119.547.156.267.693 1.139 1.488 1.841.972.859 1.791 1.127 2.052 1.258.261.131.411.11.565-.067.153-.178.665-.776.843-1.042.178-.266.355-.222.6-.133s1.554.73 1.821.864c.266.133.444.2.51.311.066.111.066.643-.189 1.365z" />
-        </svg>
-        <span class="pulse-ring"></span>
-    </a>
+    <!-- ===== MODAL: SOBRE NÓS ===== -->
+    <div class="sobre-nos-overlay" id="sobre-nos-modal" role="dialog" aria-modal="true" aria-label="Sobre Nós">
+        <div class="sobre-nos-panel">
+            <!-- Cabeçalho Fixo do Modal -->
+            <header class="sobre-nos-header">
+                <div class="sobre-nos-header-inner">
+                    <span class="sobre-nos-logo-text">Tela Celulares</span>
+                    <button class="sobre-nos-close" id="sobre-nos-close" aria-label="Fechar">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Corpo Rolável -->
+            <div class="sobre-nos-body">
+                <div class="sobre-nos-content">
+                    <div class="sobre-nos-hero">
+                        <span class="sobre-nos-tag">Nossa História</span>
+                        <h1 class="sobre-nos-title">Uma empresa<br>construída com<br><em>amor e propósito.</em></h1>
+                    </div>
+
+                    <div class="sobre-nos-divider"></div>
+
+                    <div class="sobre-nos-text-block">
+                        <p>A história da <strong>Tela Celulares</strong> é fundamentada na união, na sólida experiência de mercado e no firme propósito de oferecer um serviço verdadeiramente diferenciado. Fundada oficialmente em <strong>3 de agosto de 2025</strong>, a empresa é a concretização de um sonho compartilhado por <strong>Danúbia e seu esposo Carlos</strong>, parceiros de vida há 16 anos e, hoje, sócios nessa trajetória empresarial.</p>
+                    </div>
+
+                    <div class="sobre-nos-text-block">
+                        <p>A trajetória que deu origem à marca começou a ser desenhada cinco anos antes da abertura da loja física. Durante esse período, Danúbia atuou intensamente no segmento de telefonia e manutenção de celulares, consolidando a bagagem técnica e o conhecimento de mercado necessários para empreender. Mais do que aprimoramento profissional, essa vivência trouxe a certeza de que era possível construir um negócio próprio baseado em valores inegociáveis: <strong>honestidade, transparência e respeito absoluto pelo cliente.</strong></p>
+                    </div>
+
+                    <div class="sobre-nos-values">
+                        <div class="sobre-nos-value-item">
+                            <div class="value-icon">
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Honestidade</strong>
+                                <span>Transparência em cada atendimento</span>
+                            </div>
+                        </div>
+                        <div class="sobre-nos-value-item">
+                            <div class="value-icon">
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Respeito</strong>
+                                <span>Cada cliente tratado com cuidado</span>
+                            </div>
+                        </div>
+                        <div class="sobre-nos-value-item">
+                            <div class="value-icon">
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 11 12 14 22 4"></polyline>
+                                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Excelência</strong>
+                                <span>Qualidade em cada serviço prestado</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sobre-nos-text-block">
+                        <p>Mesmo cientes dos desafios de um mercado altamente competitivo, os fundadores escolheram seguir um caminho focado na qualidade e na responsabilidade. Em vez de priorizar apenas o volume de atendimentos, a Tela Celulares nasceu com o compromisso de <strong>humanizar o serviço técnico</strong>, garantindo que cada cliente receba uma solução precisa e um atendimento acolhedor.</p>
+                    </div>
+
+                    <div class="sobre-nos-quote">
+                        <blockquote>
+                            "Hoje, o retorno constante e a indicação dos clientes são as maiores provas de que estamos no caminho certo. Cada dispositivo reparado e cada acessório entregue representam a oportunidade de honrar o nosso compromisso com a excelência, cuidando daquilo que é mais valioso na era digital: a conexão e a confiança entre as pessoas."
+                        </blockquote>
+                        <cite>— Danúbia &amp; Carlos, Fundadores</cite>
+                    </div>
+
+                    <div class="sobre-nos-founded">
+                        <div class="founded-badge">
+                            <span class="founded-year">2025</span>
+                            <span class="founded-label">Fundada com propósito</span>
+                        </div>
+                        <div class="founded-badge">
+                            <span class="founded-year">16</span>
+                            <span class="founded-label">Anos de parceria</span>
+                        </div>
+                        <div class="founded-badge">
+                            <span class="founded-year">5+</span>
+                            <span class="founded-label">Anos de experiência</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rodapé Fixo do Modal -->
+            <footer class="sobre-nos-footer">
+                <button class="sobre-nos-back-btn" id="sobre-nos-back">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    Voltar
+                </button>
+                <a href="https://wa.me/5517997559675" target="_blank" rel="noopener noreferrer" class="sobre-nos-cta-btn">
+                    Fale Conosco
+                </a>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Botões Flutuantes -->
+    <div class="fab-group" id="fab-group">
+        <!-- Botão Flutuante: Como Chegar (Bússola) -->
+        <a href="https://share.google/zBLTr6bKNqmmjlqNl" class="fab-map-btn" target="_blank" rel="noopener noreferrer" aria-label="Como chegar à Tela Celulares">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+            </svg>
+            <span class="fab-label">Como Chegar</span>
+            <span class="pulse-ring map-pulse"></span>
+        </a>
+        <!-- Botão Flutuante: WhatsApp -->
+        <a href="https://wa.me/5517997559675" class="whatsapp-btn" target="_blank" rel="noopener noreferrer"
+            aria-label="Fale conosco no WhatsApp">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                <path
+                    d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.333 4.982L2 22l5.233-1.371a9.994 9.994 0 0 0 4.773 1.226h.004c5.507 0 9.989-4.478 9.99-9.984 0-2.669-1.037-5.176-2.923-7.062A9.923 9.923 0 0 0 12.012 2zm5.836 14.186c-.255.722-1.5 1.353-2.077 1.44-.52.078-1.198.144-1.923-.092-2.834-.925-4.834-3.743-4.975-3.931-.142-.187-1.157-1.536-1.157-2.93 0-1.393.73-2.076.99-2.353.259-.276.568-.346.757-.346h.54c.174 0 .393-.066.611.46.223.538.763 1.859.83 1.992.067.133.111.288.022.466-.089.178-.133.288-.266.444-.133.156-.279.349-.398.47-.133.134-.274.28-.119.547.156.267.693 1.139 1.488 1.841.972.859 1.791 1.127 2.052 1.258.261.131.411.11.565-.067.153-.178.665-.776.843-1.042.178-.266.355-.222.6-.133s1.554.73 1.821.864c.266.133.444.2.51.311.066.111.066.643-.189 1.365z" />
+            </svg>
+            <span class="pulse-ring"></span>
+        </a>
+    </div>
+
+    <!-- ===== MODAL: LOGIN ADMINISTRATIVO ===== -->
+    <div class="admin-login-overlay" id="admin-login-modal" role="dialog" aria-modal="true" aria-label="Login Administrativo">
+        <div class="admin-login-panel">
+            <header class="admin-login-header">
+                <span class="admin-login-logo-text">Tela Celulares - Admin</span>
+                <button class="admin-login-close" id="admin-login-close" aria-label="Fechar">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </header>
+            
+            <div class="admin-login-body">
+                <form id="admin-login-form" class="admin-login-form">
+                    <p class="admin-login-info-text">Este painel de login é destinado exclusivamente aos administradores do site para gerenciar produtos, preços e especificações.</p>
+                    
+                    <div id="login-error-msg" class="login-error-msg" style="display: none;"></div>
+
+                    <div class="form-group-login">
+                        <label for="login-email">E-mail Administrativo</label>
+                        <input type="email" id="login-email" required placeholder="admin@telacelulares.com">
+                    </div>
+                    
+                    <div class="form-group-login">
+                        <label for="login-password">Senha</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                    
+                    <button type="submit" class="admin-login-submit-btn" id="login-submit-btn">
+                        Entrar no Painel
+                    </button>
+                </form>
+            </div>
+            
+            <footer class="admin-login-footer">
+                <p>Precisa de suporte? Entre em contato com o desenvolvedor.</p>
+            </footer>
+        </div>
+    </div>
 
     <!-- Scripts da aplicação -->
     <script src="app.js"></script>
