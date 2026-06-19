@@ -3,6 +3,31 @@
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+    const supabaseUrl = 'https://hoceltmynggfpdyyvdmb.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvY2VsdG15bmdnZnBkeXl2ZG1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2Mjk0OTksImV4cCI6MjA5NzIwNTQ5OX0.Smt5T1v7dzSMEeM05Iyj9itgpYSwPmkfCKm5pZXzIzQ';
+    
+    let supabase = null;
+    if (typeof window.supabase !== 'undefined') {
+        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    }
+
+    // Verifica sessão ativa para ajustar menu de login/painel
+    if (supabase) {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                const loginBtns = document.querySelectorAll('.login-trigger');
+                loginBtns.forEach(btn => {
+                    btn.classList.remove('login-trigger');
+                    btn.setAttribute('href', 'admin.html');
+                    if (btn.classList.contains('mobile-login-btn')) {
+                        btn.setAttribute('aria-label', 'Painel Administrativo');
+                    } else {
+                        btn.innerText = 'Painel Admin';
+                    }
+                });
+            }
+        });
+    }
 
     // 1. URL CATEGORY SWITCHER FOR celulares.html
     const urlParams = new URLSearchParams(window.location.search);
@@ -133,18 +158,167 @@ document.addEventListener('DOMContentLoaded', () => {
         carousel.addEventListener('mouseleave', startAutoplay);
     }
 
-    // 4. SEARCH INTERACTION
+    // 4. LÓGICA DE BUSCA DE PRODUTOS REAL EM TEMPO REAL
     const searchInput = document.getElementById('search-input');
-    
     if (searchInput) {
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const query = searchInput.value.trim();
-                if (query) {
-                    console.log(`Buscando por: ${query}`);
-                    // Simulação de busca
-                    alert(`Simulando busca por: "${query}" na Tela Celulares`);
+        // Desativa autocomplete do navegador
+        searchInput.setAttribute('autocomplete', 'off');
+        
+        // Cria o dropdown flutuante dinamicamente se não existir
+        let dropdown = document.getElementById('search-results-dropdown');
+        if (!dropdown) {
+            dropdown = document.createElement('div');
+            dropdown.id = 'search-results-dropdown';
+            dropdown.className = 'search-results-dropdown';
+            const searchBox = searchInput.closest('.search-box');
+            if (searchBox) {
+                searchBox.style.position = 'relative';
+                searchBox.appendChild(dropdown);
+            }
+        }
+
+        let searchProductsList = [];
+        
+        // Carrega produtos uma vez do banco de dados para busca local
+        async function fetchAllProductsForSearch() {
+            if (typeof window.supabase !== 'undefined') {
+                const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+                try {
+                    const { data, error } = await client
+                        .from('products')
+                        .select('name, price, category, sub_category, image_url, specs');
+                    if (!error && data) {
+                        searchProductsList = data;
+                    }
+                } catch (e) {
+                    console.error('Erro ao carregar produtos para busca:', e);
                 }
+            }
+        }
+        
+        fetchAllProductsForSearch();
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if (query.length < 2) {
+                dropdown.innerHTML = '';
+                dropdown.classList.remove('active');
+                return;
+            }
+
+            const filtered = searchProductsList.filter(p => 
+                p.name.toLowerCase().includes(query) || 
+                (p.category && p.category.toLowerCase().includes(query)) ||
+                (p.sub_category && p.sub_category.toLowerCase().includes(query))
+            );
+
+            dropdown.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                dropdown.innerHTML = '<div class="search-no-results">Nenhum produto encontrado</div>';
+            } else {
+                // Mostra no máximo 5 resultados
+                filtered.slice(0, 5).forEach(product => {
+                    const item = document.createElement('a');
+                    item.className = 'search-result-item';
+                    
+                    const priceFormatted = parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    const storageText = product.specs && product.specs.storage ? ` (${Array.isArray(product.specs.storage) ? product.specs.storage[0] : product.specs.storage})` : '';
+                    
+                    // Direciona para a página correspondente da categoria com destaque do produto
+                    let targetUrl = `${product.category}.html`;
+                    const params = new URLSearchParams();
+                    if (product.sub_category) {
+                        params.append('cat', product.sub_category);
+                    }
+                    params.append('highlight', product.name);
+                    item.href = `${targetUrl}?${params.toString()}`;
+
+                    // Intercepta o clique se já estivermos na página correspondente
+                    item.addEventListener('click', (e) => {
+                        const currentPath = window.location.pathname.toLowerCase();
+                        const targetPage = `${product.category}.html`.toLowerCase();
+                        
+                        if (currentPath.includes(targetPage) || (targetPage === 'celulares.html' && currentPath === '/') || (targetPage === 'celulares.html' && currentPath.endsWith('index.html'))) {
+                            // Se estivermos na home e buscar celular, deixa navegar normalmente para ir para celulares.html
+                            if (currentPath === '/' || currentPath.endsWith('index.html')) {
+                                return;
+                            }
+                            
+                            e.preventDefault();
+                            dropdown.classList.remove('active');
+                            searchInput.value = '';
+                            
+                            // 1. Ativa a subcategoria correta se necessário
+                            if (product.sub_category) {
+                                // Altera a URL discretamente no histórico
+                                const newUrl = window.location.pathname + `?cat=${product.sub_category}&highlight=${encodeURIComponent(product.name)}`;
+                                history.pushState(null, '', newUrl);
+                                
+                                const categoryBtn = document.querySelector(`.category-btn[onclick*="${product.sub_category}"]`);
+                                if (categoryBtn) {
+                                    // Clica no botão da categoria para alternar a marca na tela
+                                    categoryBtn.click();
+                                }
+                            } else {
+                                const newUrl = window.location.pathname + `?highlight=${encodeURIComponent(product.name)}`;
+                                history.pushState(null, '', newUrl);
+                            }
+                            
+                            // 2. Rola e destaca de imediato
+                            setTimeout(() => {
+                                const cards = document.querySelectorAll('.horizontal-card');
+                                let targetCard = null;
+                                for (const card of cards) {
+                                    const titleEl = card.querySelector('.horizontal-title');
+                                    if (titleEl && titleEl.textContent.trim().toLowerCase() === product.name.toLowerCase()) {
+                                        targetCard = card;
+                                        break;
+                                    }
+                                }
+                                
+                                if (targetCard) {
+                                    targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    targetCard.style.outline = '3px solid var(--accent)';
+                                    targetCard.style.boxShadow = '0 0 25px rgba(242, 92, 5, 0.4)';
+                                    targetCard.style.transform = 'scale(1.02)';
+                                    
+                                    setTimeout(() => {
+                                        targetCard.style.outline = '';
+                                        targetCard.style.boxShadow = '';
+                                        targetCard.style.transform = '';
+                                    }, 3500);
+                                }
+                            }, 100);
+                        }
+                    });
+
+                    item.innerHTML = `
+                        <div class="search-result-thumb">
+                            <img src="${product.image_url || 'public/carousel/realme_c85.png'}" alt="${product.name}">
+                        </div>
+                        <div class="search-result-info">
+                            <span class="search-result-name">${product.name}</span>
+                            <span class="search-result-category">${product.category.toUpperCase()}</span>
+                            <span class="search-result-price">R$ ${priceFormatted}</span>
+                        </div>
+                    `;
+                    dropdown.appendChild(item);
+                });
+            }
+            dropdown.classList.add('active');
+        });
+
+        // Fecha ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value.trim().length >= 2) {
+                dropdown.classList.add('active');
             }
         });
     }
@@ -440,7 +614,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (error) throw error;
                     
                     if (products && products.length > 0) {
-                        bsTrack.innerHTML = '';
                         products.forEach(product => {
                             const card = document.createElement('div');
                             card.className = 'product-card';
@@ -450,13 +623,29 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ? `<span class="price-original">R$ ${parseFloat(product.original_price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>` 
                                 : '';
                             
-                            const storageText = product.specs && product.specs.storage ? ` (${product.specs.storage})` : '';
-                            const waText = encodeURIComponent(`Olá, gostaria de comprar o ${product.name}${storageText} por R$ ${priceFormatted}`);
-                            const waLink = `https://wa.me/5517997559675?text=${waText}`;
+                            // Determina a página de destino da categoria
+                            let targetPage = 'celulares.html';
+                            if (product.category) {
+                                targetPage = `${product.category}.html`;
+                            }
+                            
+                            const params = new URLSearchParams();
+                            if (product.sub_category) {
+                                params.append('cat', product.sub_category);
+                            }
+                            params.append('highlight', product.name);
+                            const targetLink = `${targetPage}?${params.toString()}`;
+                            
+                            card.setAttribute('data-href', targetLink);
+                            card.style.cursor = 'pointer';
+
+                            const finalImgUrl = (product.specs && product.specs.carousel_image_url) 
+                                 ? product.specs.carousel_image_url 
+                                 : (product.image_url || 'public/carousel/realme_c85.png');
 
                             card.innerHTML = `
                                 <div class="product-image-container">
-                                    <img src="${product.image_url || 'public/carousel/realme_c85.png'}" alt="${product.name}">
+                                    <img src="${finalImgUrl}" alt="${product.name}">
                                 </div>
                                 <div class="product-info">
                                     <h3 class="product-title">${product.name}</h3>
@@ -465,7 +654,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <span class="price-discount">R$ ${priceFormatted}</span>
                                         ${originalPriceHtml}
                                     </div>
-                                    <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="btn-buy-card">Comprar</a>
+                                    <a href="${targetLink}" class="btn-buy-card">Ver Mercadoria</a>
                                 </div>
                             `;
                             bsTrack.appendChild(card);
@@ -477,6 +666,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             initCarousel();
         }
+
+        // Delegação de clique robusta para lidar com os cards originais e clonados no carrossel
+        bsTrack.addEventListener('click', (e) => {
+            const card = e.target.closest('.product-card');
+            if (card) {
+                const href = card.getAttribute('data-href');
+                if (href) {
+                    e.preventDefault();
+                    window.location.href = href;
+                }
+            }
+        });
 
         // Inicia carregando produtos do Supabase (com fallback estático)
         fetchBestSellers();
@@ -500,24 +701,21 @@ document.addEventListener('DOMContentLoaded', () => {
             qnContainer.appendChild(clone);
         });
     }
-
-    // 8. SUPABASE CLIENT INITIALIZATION & ADMIN LOGIN
-    const supabaseUrl = 'https://hoceltmynggfpdyyvdmb.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvY2VsdG15bmdnZnBkeXl2ZG1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2Mjk0OTksImV4cCI6MjA5NzIwNTQ5OX0.Smt5T1v7dzSMEeM05Iyj9itgpYSwPmkfCKm5pZXzIzQ';
-    
-    let supabase = null;
-    if (typeof window.supabase !== 'undefined') {
-        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-    }
-
     const loginModal = document.getElementById('admin-login-modal');
     const loginTriggers = document.querySelectorAll('.login-trigger');
     const loginCloseBtn = document.getElementById('admin-login-close');
     const loginForm = document.getElementById('admin-login-form');
     const errorMsgDiv = document.getElementById('login-error-msg');
 
-    function openLoginModal(e) {
+    async function openLoginModal(e) {
         if (e) e.preventDefault();
+        if (supabase) {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                window.location.href = 'admin.html';
+                return;
+            }
+        }
         if (loginModal) {
             loginModal.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -598,4 +796,177 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Busca e renderiza dinamicamente a seção de Novos Lançamentos do Supabase
+    async function fetchNewLaunches() {
+        const newLaunchSection = document.getElementById('new-launch');
+        if (!newLaunchSection || typeof window.supabase === 'undefined') return;
+
+        const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+        try {
+            const { data: products, error } = await client
+                .from('products')
+                .select('*')
+                .eq('is_new_launch', true)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            if (products && products.length > 0) {
+                // Remove o card estático original
+                const heroCard = newLaunchSection.querySelector('.launch-hero-card');
+                if (heroCard) heroCard.remove();
+
+                // Remove cards dinâmicos antigos caso já tenham sido inseridos
+                const existingDynamicCards = newLaunchSection.querySelectorAll('.launch-hero-card');
+                existingDynamicCards.forEach(c => c.remove());
+
+                // Para cada novo lançamento cadastrado, cria um card
+                products.forEach(product => {
+                    const card = document.createElement('div');
+                    card.className = 'launch-hero-card';
+                    card.style.marginBottom = '24px'; // margem caso haja múltiplos
+
+                    const priceFormatted = parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    
+                    // Converte descrição ou specs para bullet points
+                    let specsListHtml = '';
+                    if (product.description) {
+                        specsListHtml = product.description.split(' • ').map(spec => `<li>${spec.trim()}</li>`).join('');
+                        if (!specsListHtml.includes('<li>')) {
+                            specsListHtml = product.description.split(',').map(spec => `<li>${spec.trim()}</li>`).join('');
+                        }
+                    }
+
+                    // Tenta ler capacidade das especificações
+                    const storageLabel = product.specs && product.specs.storage 
+                        ? (Array.isArray(product.specs.storage) ? product.specs.storage[0] : product.specs.storage)
+                        : '';
+                    const storageText = storageLabel ? ` (${storageLabel})` : '';
+
+                    const waText = encodeURIComponent(`Olá, gostaria de comprar o lançamento ${product.name}${storageText} por R$ ${priceFormatted}`);
+                    const waLink = `https://wa.me/5517997559675?text=${waText}`;
+
+                    // Determina o link de Saiba Mais
+                    let saibaMaisLink = 'celulares.html';
+                    if (product.category) {
+                        saibaMaisLink = `${product.category}.html`;
+                        const params = new URLSearchParams();
+                        if (product.sub_category) {
+                            params.append('cat', product.sub_category);
+                        }
+                        params.append('highlight', product.name);
+                        saibaMaisLink += `?${params.toString()}`;
+                    }
+
+                    const finalImgUrl = (product.specs && product.specs.new_launch_image_url) 
+                         ? product.specs.new_launch_image_url 
+                         : (product.image_url || 'public/carousel/realme_c85.png');
+
+                     card.innerHTML = `
+                         <div class="launch-image-container">
+                             <img src="${finalImgUrl}" alt="${product.name}">
+                         </div>
+                         <div class="launch-details">
+                             <div class="launch-badge">LANÇAMENTO</div>
+                             <h3 class="launch-title">${product.name}</h3>
+                             <p class="launch-desc">Confira o novo lançamento disponível na loja física e online com preço e condições exclusivas!</p>
+                             <ul class="launch-specs">
+                                 ${specsListHtml || `<li>Design inovador e moderno</li><li>Alta performance no dia a dia</li>`}
+                             </ul>
+                             <div class="launch-pricing">
+                                 <span class="price-now">R$ ${priceFormatted}</span>
+                             </div>
+                             <div class="launch-actions">
+                                 <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="btn-primary">Comprar Agora</a>
+                                 <a href="${saibaMaisLink}" class="btn-secondary">Saiba Mais</a>
+                             </div>
+                         </div>
+                     `;
+                    newLaunchSection.appendChild(card);
+                });
+            }
+        } catch (err) {
+            console.error('Erro ao buscar novos lançamentos:', err);
+        }
+    }
+
+    fetchNewLaunches();
+
+    // 8. PROCESSAMENTO DE LINKS DO CABEÇALHO E INTERCEPTAÇÃO DE CLIQUES
+    function setupHeaderLinks() {
+        const genericCategories = [
+            'loja', 'celulares', 'tablets', 'power bank', 'áudio', 'acessórios', 'informática',
+            'destaques', 'mais vendidos', 'sobre nós', 'fones', 'caixas de som', 'películas',
+            'cases', 'carregadores', 'cabos', 'teclados', 'teclado e mouse', 'login', 'painel admin'
+        ];
+
+        document.querySelectorAll('.nav-menu a, .mobile-actions a, .dropdown-menu a, .mega-menu a').forEach(link => {
+            const href = link.getAttribute('href');
+            if (!href) return;
+
+            // Alvos de categoria
+            const targets = ['celulares.html', 'baterias.html', 'audio.html', 'acessorios.html', 'informatica.html', 'tablets.html'];
+            const isTargetPage = targets.some(t => href.includes(t));
+            
+            if (isTargetPage) {
+                const text = link.textContent.trim();
+                // Ignora se for link de categoria genérica
+                if (genericCategories.includes(text.toLowerCase())) return;
+
+                // Limpa o nome do produto para a busca/destaque
+                const cleanName = text
+                    .replace(/\(Destaque\)/gi, '')
+                    .replace(/\(Barrinha\)/gi, '')
+                    .replace(/\(Flip\)/gi, '')
+                    .trim();
+
+                if (cleanName.length > 0 && !href.includes('highlight=')) {
+                    const separator = href.includes('?') ? '&' : '?';
+                    const newHref = `${href}${separator}highlight=${encodeURIComponent(cleanName)}`;
+                    link.setAttribute('href', newHref);
+                }
+
+                // Intercepta cliques se já estivermos na mesma página
+                link.addEventListener('click', (e) => {
+                    const currentPath = window.location.pathname.toLowerCase();
+                    // Resolve o caminho relativo do link
+                    const targetUrl = new URL(link.getAttribute('href'), window.location.origin);
+                    const targetPath = targetUrl.pathname.toLowerCase();
+
+                    // Se estamos na mesma página html (ex: celulares.html) ou mapeamento index -> celulares
+                    const isSamePage = currentPath === targetPath || 
+                        (currentPath.endsWith('/') && targetPath.endsWith('index.html')) || 
+                        (currentPath.endsWith('index.html') && targetPath.endsWith('/'));
+
+                    if (isSamePage) {
+                        const searchParams = targetUrl.searchParams;
+                        const highlight = searchParams.get('highlight');
+                        const cat = searchParams.get('cat');
+
+                        if (highlight && typeof window.highlightProduct === 'function') {
+                            e.preventDefault();
+                            
+                            // Atualiza a URL sem recarregar
+                            history.pushState(null, '', targetUrl.pathname + targetUrl.search);
+                            
+                            // Dispara destaque e scroll suave
+                            window.highlightProduct(highlight);
+
+                            // Fecha menu mobile se estiver aberto
+                            const mobileToggle = document.getElementById('mobile-toggle');
+                            const navMenu = document.getElementById('nav-menu');
+                            if (mobileToggle && navMenu) {
+                                mobileToggle.classList.remove('active');
+                                navMenu.classList.remove('active');
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    // Executa setup dos links com pequeno delay para garantir carregamento de outros scripts
+    setTimeout(setupHeaderLinks, 100);
 });

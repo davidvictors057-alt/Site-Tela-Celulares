@@ -66,7 +66,23 @@
                     // Colors
                     const specs = product.specs || {};
                     let colorsHtml = '';
-                    if (specs.colors && specs.colors.length > 0) {
+                    
+                    // Normaliza cores para um formato uniforme: [{ hex, name }]
+                    let normalizedColors = [];
+                    if (specs.colors) {
+                        if (Array.isArray(specs.colors)) {
+                            normalizedColors = specs.colors.map(c => {
+                                if (typeof c === 'object' && c !== null) {
+                                    return { hex: c.hex || '#000000', name: c.name || 'Cor' };
+                                }
+                                return { hex: '#000000', name: String(c) };
+                            });
+                        } else if (typeof specs.colors === 'string') {
+                            normalizedColors = specs.colors.split(',').map(c => c.trim()).filter(c => c !== '').map(c => ({ hex: '#000000', name: c }));
+                        }
+                    }
+
+                    if (normalizedColors.length > 0) {
                         const colorMap = {
                             'preto': '#1d1d1f', 'azul': '#0066cc', 'dourado': '#e5c158',
                             'branco': '#ffffff', 'cinza': '#86868b', 'verde': '#34c759',
@@ -75,15 +91,16 @@
                             'silver': '#e5e5ea', 'black': '#000000', 'blue': '#0000ff'
                         };
                         
-                        const dots = specs.colors.map((color, idx) => {
-                            const cleanColor = color.toLowerCase().trim();
-                            const hex = colorMap[cleanColor] || cleanColor;
-                            return `<span class="color-dot ${idx === 0 ? 'active' : ''}" style="background-color: ${hex};" title="${color}"></span>`;
+                        const dots = normalizedColors.map((colorObj, idx) => {
+                            const cleanColor = colorObj.name.toLowerCase().trim();
+                            // Se colorObj.hex é válido e diferente de '#000000', usamos ele, senão tentamos o mapeamento
+                            const hex = (colorObj.hex && colorObj.hex !== '#000000') ? colorObj.hex : (colorMap[cleanColor] || '#000000');
+                            return `<span class="color-dot ${idx === 0 ? 'active' : ''}" style="background-color: ${hex};" title="${colorObj.name}"></span>`;
                         }).join('');
                         
                         colorsHtml = `
                             <div class="color-selector">
-                                <span>Cor: ${specs.colors[0]}</span>
+                                <span>Cor: ${normalizedColors[0].name}</span>
                                 <div class="color-dots">
                                     ${dots}
                                 </div>
@@ -93,10 +110,22 @@
                     
                     // Storage
                     let storageHtml = '';
+                    let normalizedStorage = [];
                     if (specs.storage) {
+                        if (Array.isArray(specs.storage)) {
+                            normalizedStorage = specs.storage;
+                        } else if (typeof specs.storage === 'string') {
+                            normalizedStorage = [specs.storage];
+                        }
+                    }
+
+                    if (normalizedStorage.length > 0) {
+                        const badges = normalizedStorage.map((st, idx) => {
+                            return `<span class="storage-badge ${idx === 0 ? 'active' : ''}">${st}</span>`;
+                        }).join('');
                         storageHtml = `
                             <div class="storage-selector">
-                                <span class="storage-badge active">${specs.storage}</span>
+                                ${badges}
                             </div>
                         `;
                     }
@@ -108,7 +137,7 @@
                     }
                     
                     const priceFormatted = parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-                    const storageLabel = specs.storage ? ` (${specs.storage})` : '';
+                    const storageLabel = normalizedStorage.length > 0 ? ` (${normalizedStorage[0]})` : '';
                     const waText = encodeURIComponent(`Olá, gostaria de comprar o ${product.name}${storageLabel} por R$ ${priceFormatted}`);
                     const waLink = `https://wa.me/5517997559675?text=${waText}`;
                     
@@ -156,6 +185,71 @@
                     });
                 });
             });
+
+            // 5. Destaca e rola até o produto de forma global
+            window.highlightProduct = function(name) {
+                if (!name) return;
+                name = name.trim();
+                
+                // Encontra qual é a subcategoria (grupo) do produto destacado para garantir que a aba esteja ativa
+                const targetProduct = products.find(p => p.name.toLowerCase().trim() === name.toLowerCase());
+                if (targetProduct) {
+                    const sub = targetProduct.sub_category || 'default';
+                    let sectionId = sub;
+                    if (sub === 'xiaomi') sectionId = 'xiaomi';
+                    else if (sub === 'amazon-fire') sectionId = 'amazon-fire';
+                    
+                    // Clica no botão correspondente da aba para ativá-la e exibi-la
+                    const categoryBtn = document.querySelector(`.category-btn[onclick*="${sub}"]`);
+                    if (categoryBtn) {
+                        // Remove active de todos os botões e seções
+                        document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                        document.querySelectorAll('.category-section').forEach(sec => sec.classList.remove('active'));
+                        
+                        // Ativa a aba
+                        categoryBtn.classList.add('active');
+                        const section = document.getElementById(sectionId) || document.getElementById(sub);
+                        if (section) {
+                            section.classList.add('active');
+                        }
+                    }
+                }
+
+                setTimeout(() => {
+                    const cards = document.querySelectorAll('.horizontal-card');
+                    let targetCard = null;
+                    for (const card of cards) {
+                        const titleEl = card.querySelector('.horizontal-title');
+                        if (titleEl && titleEl.textContent.trim().toLowerCase() === name.toLowerCase()) {
+                            targetCard = card;
+                            break;
+                        }
+                    }
+                    
+                    if (targetCard) {
+                        // Rola até o card correspondente de forma suave e centralizada
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Aplica borda de destaque e sombra temporária premium (pulso laranja)
+                        targetCard.style.outline = '3px solid var(--accent)';
+                        targetCard.style.boxShadow = '0 0 25px rgba(242, 92, 5, 0.7)';
+                        targetCard.style.transform = 'scale(1.03)';
+                        targetCard.style.transition = 'outline 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease';
+                        
+                        setTimeout(() => {
+                            targetCard.style.outline = '';
+                            targetCard.style.boxShadow = '';
+                            targetCard.style.transform = '';
+                        }, 3500);
+                    }
+                }, 200); // Pequeno delay para garantir renderização e troca de aba
+            };
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const highlightName = urlParams.get('highlight');
+            if (highlightName) {
+                window.highlightProduct(highlightName);
+            }
             
         } catch (err) {
             console.error(`Erro ao carregar produtos dinâmicos da categoria ${category}:`, err);
