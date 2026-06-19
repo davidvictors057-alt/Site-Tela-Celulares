@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablets - Tela Celulares</title>
+    <title>Moda - Tela Celulares</title>
     <!-- Meta tags SEO -->
-    <meta name="description" content="Navegue pela nossa seleção completa de tablets Redmi Pad, Amazon Fire HD e muito mais. Tecnologia premium ao seu alcance.">
-    <meta name="keywords" content="tela celulares, tablets, redmi pad, amazon fire hd, fire kids">
+    <meta name="description"
+        content="Confira a linha de moda na Tela Celulares! Encontre mochilas, bonés, óculos e carteiras masculinas e femininas com o melhor preço e qualidade premium.">
     <meta name="robots" content="index, follow">
-    
+
     <!-- Google Fonts: Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Estilos globais e componentes -->
+
+    <!-- Estilos globais -->
     <link rel="stylesheet" href="style.css">
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="dynamic-loader.js"></script>
     
+    <!-- CSS Adicional Específico para Abas -->
     <style>
-        /* Estilos específicos para a página de categorias */
         .category-nav {
             background-color: var(--bg-secondary);
             border-bottom: 1px solid var(--border-color);
@@ -54,6 +52,8 @@
             color: var(--text-secondary);
             white-space: nowrap;
             transition: all var(--transition-fast);
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
         }
         .category-btn.active, .category-btn:hover {
             background-color: var(--accent);
@@ -68,6 +68,63 @@
         .category-section.active {
             display: block;
             animation: fadeInUp var(--transition-normal) forwards;
+        }
+
+        /* Evita que o footer suba antes do carregamento do Supabase */
+        .section-container {
+            min-height: 600px;
+        }
+
+        /* SKELETON LOADER ANIMADO */
+        .skeleton-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row; 
+            min-height: 250px;
+            height: auto;
+            position: relative;
+        }
+        .skeleton-image {
+            width: 35%;
+            min-width: 120px;
+            background: linear-gradient(90deg, #e5e5ea 25%, #f2f2f7 50%, #e5e5ea 75%);
+            background-size: 200% 100%;
+            animation: loading-pulse 1.5s infinite;
+            border-right: 1px solid var(--border-color);
+        }
+        .skeleton-info {
+            width: 65%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .skeleton-text {
+            height: 18px;
+            background: linear-gradient(90deg, #e5e5ea 25%, #f2f2f7 50%, #e5e5ea 75%);
+            background-size: 200% 100%;
+            animation: loading-pulse 1.5s infinite;
+            border-radius: 4px;
+        }
+        .skeleton-title { width: 60%; height: 24px; }
+        .skeleton-badge { width: 30%; height: 24px; border-radius: 20px; }
+        .skeleton-bullet { width: 85%; }
+        .skeleton-bullet-short { width: 50%; }
+        .skeleton-price-row {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .skeleton-price { width: 35%; height: 26px; }
+        .skeleton-btn { width: 30%; height: 36px; border-radius: 8px; }
+
+        @keyframes loading-pulse {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         /* GRID RESPONSIVA DE CARDS HORIZONTAIS RETANGULARES (2x2) */
@@ -203,7 +260,7 @@
             display: inline-block;
         }
         
-        /* Efeito de zoom com leve rotação (GIF-like) no hover da imagem */
+        /* Efeito de zoom com leve rotação no hover da imagem */
         .horizontal-card:hover .horizontal-image-container img,
         .horizontal-card:hover .horizontal-image-placeholder {
             transform: scale(1.15) rotate(2deg);
@@ -238,7 +295,7 @@
             overflow: hidden;
             display: -webkit-box;
             -webkit-line-clamp: 3;
-            line-clamp: 3; /* Adicionado para compatibilidade */
+            line-clamp: 3;
             -webkit-box-orient: vertical;
         }
         
@@ -278,13 +335,13 @@
         
         @media (max-width: 1024px) {
             .category-grid {
-                grid-template-columns: 1fr; /* 1 por linha em telas intermediárias se necessário, ou mantém 2 */
+                grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 768px) {
             .category-grid {
-                grid-template-columns: 1fr; /* 1 por coluna em telas pequenas para manter o formato retangular de forma limpa */
+                grid-template-columns: 1fr;
                 gap: 16px;
             }
             
@@ -300,7 +357,7 @@
             .horizontal-tagline {
                 font-size: 0.75rem;
                 -webkit-line-clamp: 2;
-                line-clamp: 2; /* Adicionado para compatibilidade */
+                line-clamp: 2;
             }
             
             .horizontal-image-container {
@@ -311,7 +368,7 @@
             .horizontal-info {
                 width: 70%;
                 padding: 12px 12px 60px 12px;
-                background-color: var(--bg-secondary); /* Mantém fundo cinza claro no mobile */
+                background-color: var(--bg-secondary);
             }
             
             .horizontal-price-buy-row {
@@ -330,7 +387,11 @@
             }
         }
     </style>
+
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
 
     <!-- Cabeçalho (Header) -->
@@ -340,8 +401,8 @@
             <a href="index.html" class="logo-container">
                 <img src="public/logotipo/logo.png?v=2" alt="Tela Celulares Logo" class="company-logo">
             </a>
-            
-                                                                                    <!-- Menu de Navegação -->
+
+                                                                        <!-- Menu de Navegação -->
             <nav class="nav-menu" id="nav-menu">
                 <ul>
                     <li class="has-dropdown">
@@ -400,7 +461,7 @@
                         </div>
                     </li>
                     <li class="has-mega-dropdown">
-                        <a href="tablets.html" class="nav-link active">Tablets</a>
+                        <a href="tablets.html" class="nav-link">Tablets</a>
                         <div class="mega-menu">
                             <div class="mega-column">
                                 <h3 class="mega-column-title">Linha Xiaomi / Redmi</h3>
@@ -518,7 +579,7 @@
                         </div>
                     </li>
                     <li class="has-mega-dropdown">
-                        <a href="moda.html" class="nav-link">Moda</a>
+                        <a href="moda.html" class="nav-link active">Moda</a>
                         <div class="mega-menu">
                             <div class="mega-column">
                                 <h3 class="mega-column-title">Acessórios de Moda</h3>
@@ -594,9 +655,10 @@
             <!-- Barra de Busca -->
             <div class="search-container">
                 <div class="search-box">
-                    <input type="text" placeholder="Buscar tablets..." id="search-input">
+                    <input type="text" placeholder="Buscar produtos..." id="search-input">
                     <button class="btn-search" aria-label="Buscar">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
@@ -606,14 +668,16 @@
 
             <!-- Ações Mobile -->
             <div class="mobile-actions">
-                <a href="index.html?login=true" class="mobile-login-btn" aria-label="Login">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <a href="index.html?login=true" class="mobile-login-btn login-trigger" aria-label="Login">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
                 </a>
                 <button class="mobile-menu-toggle" id="mobile-toggle" aria-label="Menu">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <line x1="3" y1="12" x2="21" y2="12" class="line-mid"></line>
                         <line x1="3" y1="6" x2="21" y2="6" class="line-top"></line>
                         <line x1="3" y1="18" x2="21" y2="18" class="line-bot"></line>
@@ -626,206 +690,43 @@
     <!-- Sub-Navegação por Categorias -->
     <div class="category-nav">
         <div class="category-nav-container">
-            <button class="category-btn active" onclick="switchCategory('xiaomi-tablets')">Linha Xiaomi / Redmi Pad</button>
-            <button class="category-btn" onclick="switchCategory('amazon-fire')">Linha Amazon Fire</button>
+            <button class="category-btn active" onclick="switchCategory('mochilas-bolsas')">Mochilas e Bolsas</button>
+            <button class="category-btn" onclick="switchCategory('bones')">Bonés</button>
+            <button class="category-btn" onclick="switchCategory('oculos')">Óculos</button>
+            <button class="category-btn" onclick="switchCategory('outros')">Outros</button>
         </div>
     </div>
 
     <main class="section-container">
-        <!-- SEÇÃO XIAOMI TABLETS -->
-        <section id="xiaomi-tablets" class="category-section active">
-            <h2 class="section-heading">Tablets Xiaomi & Redmi</h2>
+        <!-- SEÇÃO MOCHILAS & BOLSAS -->
+        <section id="mochilas-bolsas" class="category-section active">
+            <h2 class="section-heading">Mochilas e Bolsas</h2>
             <div class="category-grid">
-                <!-- Redmi Pad 2 -->
-                <div class="horizontal-card">
-                    <div class="horizontal-image-container">
-                        <span class="horizontal-image-placeholder">平板</span>
-                    </div>
-                    <div class="horizontal-info">
-                        <h3 class="horizontal-title">Redmi Pad 2</h3>
-                        <div class="color-selector">
-                            <span>Cor: Escolha uma cor</span>
-                            <div class="color-dots">
-                                <span class="color-dot active" style="background-color: #3e3e3e;" title="Cinza"></span>
-                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
-                                <span class="color-dot" style="background-color: #7ea172;" title="Verde"></span>
-                            </div>
-                        </div>
-                        <div class="storage-selector">
-                            <span class="storage-badge active">256/8</span>
-                        </div>
-                        <ul class="spec-list">
-                            <li>Tela 11.0" 2.5K 90Hz</li>
-                            <li>Processador MediaTek Helio G100 Ultra</li>
-                            <li>Bateria Monstruosa 9000mAh</li>
-                            <li>Quatro alto-falantes Dolby Atmos</li>
-                        </ul>
-                        <div class="horizontal-price-buy-row">
-                            <span class="horizontal-price">R$ 1.499,00</span>
-                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Redmi%20Pad%202%20(256/8)%20por%20R$%201.499,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Redmi Pad 2 SE -->
-                <div class="horizontal-card">
-                    <div class="horizontal-image-container">
-                        <span class="horizontal-image-placeholder">平板</span>
-                    </div>
-                    <div class="horizontal-info">
-                        <h3 class="horizontal-title">Redmi Pad 2 SE</h3>
-                        <div class="color-selector">
-                            <span>Cor: Escolha uma cor</span>
-                            <div class="color-dots">
-                                <span class="color-dot active" style="background-color: #3e3e3e;" title="Cinza"></span>
-                                <span class="color-dot" style="background-color: #a1e5d0;" title="Verde Menta"></span>
-                                <span class="color-dot" style="background-color: #a38fc6;" title="Roxo"></span>
-                            </div>
-                        </div>
-                        <div class="storage-selector">
-                            <span class="storage-badge active">256/8</span>
-                        </div>
-                        <ul class="spec-list">
-                            <li>Tela 11.0" FHD+ 90Hz</li>
-                            <li>Qualcomm Snapdragon 680</li>
-                            <li>Bateria gigante de 8000mAh</li>
-                            <li>Corpo único em metal ultrafino</li>
-                        </ul>
-                        <div class="horizontal-price-buy-row">
-                            <span class="horizontal-price">R$ 1.495,00</span>
-                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Redmi%20Pad%202%20SE%20(256/8)%20por%20R$%201.495,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Redmi Pad SE 8.7 -->
-                <div class="horizontal-card">
-                    <div class="horizontal-image-container">
-                        <span class="horizontal-image-placeholder">平板</span>
-                    </div>
-                    <div class="horizontal-info">
-                        <h3 class="horizontal-title">Redmi Pad SE 8.7"</h3>
-                        <div class="color-selector">
-                            <span>Cor: Escolha uma cor</span>
-                            <div class="color-dots">
-                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
-                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
-                                <span class="color-dot" style="background-color: #7ea172;" title="Verde"></span>
-                            </div>
-                        </div>
-                        <div class="storage-selector">
-                            <span class="storage-badge active">256/8</span>
-                        </div>
-                        <ul class="spec-list">
-                            <li>Tela 8.7" DCI-P3 90Hz 600 nits</li>
-                            <li>MediaTek Helio G85 octa-core</li>
-                            <li>Bateria de 6650mAh + Carga 18W</li>
-                            <li>Peso leve de apenas 373g</li>
-                        </ul>
-                        <div class="horizontal-price-buy-row">
-                            <span class="horizontal-price">R$ 1.465,00</span>
-                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Redmi%20Pad%20SE%208.7%20(256/8)%20por%20R$%201.465,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
-                        </div>
-                    </div>
-                </div>
+                <div class="loading-products">Carregando produtos...</div>
             </div>
         </section>
 
-        <!-- SEÇÃO AMAZON FIRE -->
-        <section id="amazon-fire" class="category-section">
-            <h2 class="section-heading">Tablets Amazon Fire</h2>
+        <!-- SEÇÃO BONÉS -->
+        <section id="bones" class="category-section">
+            <h2 class="section-heading">Bonés</h2>
             <div class="category-grid">
-                <!-- Amazon Fire HD 10 -->
-                <div class="horizontal-card">
-                    <div class="horizontal-image-container">
-                        <span class="horizontal-image-placeholder">平板</span>
-                    </div>
-                    <div class="horizontal-info">
-                        <h3 class="horizontal-title">Amazon Fire HD 10</h3>
-                        <div class="color-selector">
-                            <span>Cor: Escolha uma cor</span>
-                            <div class="color-dots">
-                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
-                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
-                                <span class="color-dot" style="background-color: #a38fc6;" title="Roxo"></span>
-                            </div>
-                        </div>
-                        <div class="storage-selector">
-                            <span class="storage-badge active">256/8</span>
-                        </div>
-                        <ul class="spec-list">
-                            <li>Tela 10.1" Full HD 1080p</li>
-                            <li>Processador Octa-Core 2.0 GHz</li>
-                            <li>Bateria durável até 12 horas</li>
-                            <li>Integração completa com Alexa</li>
-                        </ul>
-                        <div class="horizontal-price-buy-row">
-                            <span class="horizontal-price">R$ 995,00</span>
-                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Amazon%20Fire%20HD%2010%20(256/8)%20por%20R$%20995,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
-                        </div>
-                    </div>
-                </div>
+                <div class="loading-products">Carregando produtos...</div>
+            </div>
+        </section>
 
-                <!-- Amazon Fire HD 8 -->
-                <div class="horizontal-card">
-                    <div class="horizontal-image-container">
-                        <span class="horizontal-image-placeholder">平板</span>
-                    </div>
-                    <div class="horizontal-info">
-                        <h3 class="horizontal-title">Amazon Fire HD 8</h3>
-                        <div class="color-selector">
-                            <span>Cor: Escolha uma cor</span>
-                            <div class="color-dots">
-                                <span class="color-dot active" style="background-color: #222;" title="Preto"></span>
-                                <span class="color-dot" style="background-color: #2c5d88;" title="Azul"></span>
-                            </div>
-                        </div>
-                        <div class="storage-selector">
-                            <span class="storage-badge active">256/8</span>
-                        </div>
-                        <ul class="spec-list">
-                            <li>Tela 8.0" HD resistente</li>
-                            <li>Processador Hexa-Core 2.0 GHz</li>
-                            <li>Bateria para até 13 horas</li>
-                            <li>Vidro reforçado aluminossilicato</li>
-                        </ul>
-                        <div class="horizontal-price-buy-row">
-                            <span class="horizontal-price">R$ 965,00</span>
-                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Amazon%20Fire%20HD%208%20(256/8)%20por%20R$%20965,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
-                        </div>
-                    </div>
-                </div>
+        <!-- SEÇÃO ÓCULOS -->
+        <section id="oculos" class="category-section">
+            <h2 class="section-heading">Óculos</h2>
+            <div class="category-grid">
+                <div class="loading-products">Carregando produtos...</div>
+            </div>
+        </section>
 
-                <!-- Amazon Fire 7 Kids -->
-                <div class="horizontal-card">
-                    <div class="horizontal-image-container">
-                        <span class="horizontal-image-placeholder">🧸</span>
-                    </div>
-                    <div class="horizontal-info">
-                        <h3 class="horizontal-title">Amazon Fire 7 Kids</h3>
-                        <div class="color-selector">
-                            <span>Cor: Escolha uma cor</span>
-                            <div class="color-dots">
-                                <span class="color-dot active" style="background-color: #2c5d88;" title="Azul"></span>
-                                <span class="color-dot" style="background-color: #e85d82;" title="Rosa"></span>
-                                <span class="color-dot" style="background-color: #a38fc6;" title="Roxo"></span>
-                            </div>
-                        </div>
-                        <div class="storage-selector">
-                            <span class="storage-badge active">64/3</span>
-                        </div>
-                        <ul class="spec-list">
-                            <li>Tela 7.0" resistente com capa</li>
-                            <li>Processador Quad-Core 2.0 GHz</li>
-                            <li>Capa protetora com suporte integrado</li>
-                            <li>Controle parental fácil de usar</li>
-                        </ul>
-                        <div class="horizontal-price-buy-row">
-                            <span class="horizontal-price">R$ 699,00</span>
-                            <a href="https://wa.me/5517997559675?text=Olá,%20gostaria%20de%20comprar%20o%20Amazon%20Fire%207%20Kids%20(64/3)%20por%20R$%20699,00" target="_blank" rel="noopener noreferrer" class="horizontal-buy-btn">Comprar</a>
-                        </div>
-                    </div>
-                </div>
+        <!-- SEÇÃO OUTROS -->
+        <section id="outros" class="category-section">
+            <h2 class="section-heading">Outros</h2>
+            <div class="category-grid">
+                <div class="loading-products">Carregando produtos...</div>
             </div>
         </section>
     </main>
@@ -962,41 +863,18 @@
         <span class="pulse-ring"></span>
     </a>
 
-    <!-- Scripts e Lógica de Alternância -->
+    <!-- Scripts -->
     <script src="app.js"></script>
+    <script src="dynamic-loader.js"></script>
     <script>
         function switchCategory(catId) {
-            // Remove active de todos os botões e seções
             document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.category-section').forEach(sec => sec.classList.remove('active'));
             
-            // Adiciona active no botão clicado e na seção correspondente
             event.currentTarget.classList.add('active');
-            document.getElementById(catId).classList.add('active');
+            const targetSec = document.getElementById(catId);
+            if (targetSec) targetSec.classList.add('active');
         }
-
-        // Interatividade de seleção de cores
-        document.querySelectorAll('.color-dot').forEach(dot => {
-            dot.addEventListener('click', function() {
-                const parent = this.closest('.color-dots');
-                parent.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Atualiza o texto "Cor: ..."
-                const label = this.closest('.color-selector').querySelector('span');
-                const colorName = this.getAttribute('title');
-                label.textContent = `Cor: ${colorName}`;
-            });
-        });
-
-        // Interatividade de seleção de capacidade
-        document.querySelectorAll('.storage-badge').forEach(badge => {
-            badge.addEventListener('click', function() {
-                const parent = this.closest('.storage-selector');
-                parent.querySelectorAll('.storage-badge').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
     </script>
 </body>
 </html>

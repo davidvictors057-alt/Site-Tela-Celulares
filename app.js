@@ -29,9 +29,99 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 1. URL CATEGORY SWITCHER FOR celulares.html
+    // 1. URL CATEGORY SWITCHER AND HIGHLIGHTER FOR ALL PAGES
+    window.highlightProduct = function(productName) {
+        if (!productName) return false;
+
+        const matchName = (nameA, nameB) => {
+            if (!nameA || !nameB) return false;
+            const clean = (str) => str
+                .toLowerCase()
+                .replace(/\(destaque\)/gi, '')
+                .replace(/\(barrinha\)/gi, '')
+                .replace(/\(flip\)/gi, '')
+                .replace(/[\s\-_]+/g, '')
+                .replace(/256gb|128gb|64gb|512gb|32gb/gi, '')
+                .replace(/4g|5g/gi, '')
+                .trim();
+            const cA = clean(nameA);
+            const cB = clean(nameB);
+            return cA === cB || cA.includes(cB) || cB.includes(cA);
+        };
+
+        const cards = document.querySelectorAll('.horizontal-card');
+        let targetCard = null;
+        for (const card of cards) {
+            const titleEl = card.querySelector('.horizontal-title');
+            if (titleEl && matchName(titleEl.textContent, productName)) {
+                targetCard = card;
+                break;
+            }
+        }
+
+        if (targetCard) {
+            const section = targetCard.closest('.category-section');
+            if (section) {
+                const sectionId = section.id;
+                const categoryBtn = document.querySelector(`.category-btn[onclick*="${sectionId}"]`);
+                
+                // Remove active de todos os botões e seções
+                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.category-section').forEach(sec => sec.classList.remove('active'));
+
+                if (categoryBtn) {
+                    categoryBtn.classList.add('active');
+                }
+                section.classList.add('active');
+            }
+
+            setTimeout(() => {
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetCard.style.outline = '3px solid var(--accent)';
+                targetCard.style.boxShadow = '0 0 25px rgba(242, 92, 5, 0.4)';
+                targetCard.style.transform = 'scale(1.02)';
+                targetCard.style.transition = 'all 0.3s ease';
+                
+                setTimeout(() => {
+                    targetCard.style.outline = '';
+                    targetCard.style.boxShadow = '';
+                    targetCard.style.transform = '';
+                }, 3500);
+            }, 200);
+            return true;
+        }
+        return false;
+    };
+
+    function checkHashAndHighlight() {
+        const hash = window.location.hash;
+        if (hash === '#new-launch' || hash === '#best-sellers') {
+            const targetSec = document.querySelector(hash);
+            if (targetSec) {
+                setTimeout(() => {
+                    targetSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    targetSec.style.outline = '3px solid var(--accent)';
+                    targetSec.style.boxShadow = '0 0 25px rgba(242, 92, 5, 0.4)';
+                    targetSec.style.borderRadius = '12px';
+                    targetSec.style.transition = 'all 0.3s ease';
+                    
+                    setTimeout(() => {
+                        targetSec.style.outline = '';
+                        targetSec.style.boxShadow = '';
+                        targetSec.style.borderRadius = '';
+                    }, 3500);
+                }, 300);
+            }
+        }
+    }
+
+    window.addEventListener('hashchange', checkHashAndHighlight);
+    setTimeout(checkHashAndHighlight, 500);
+
     const urlParams = new URLSearchParams(window.location.search);
     const catParam = urlParams.get('cat');
+    const highlightParam = urlParams.get('highlight');
+
     if (catParam) {
         const targetBtn = document.querySelector(`.category-btn[onclick*="${catParam}"]`);
         if (targetBtn) {
@@ -46,6 +136,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 targetSec.classList.add('active');
             }
         }
+    }
+
+    if (highlightParam) {
+        setTimeout(() => {
+            window.highlightProduct(highlightParam);
+        }, 300);
     }
 
     // 2. SCROLL EFFECT ON HEADER
@@ -223,7 +319,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     item.className = 'search-result-item';
                     
                     const priceFormatted = parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-                    const storageText = product.specs && product.specs.storage ? ` (${Array.isArray(product.specs.storage) ? product.specs.storage[0] : product.specs.storage})` : '';
+                    const firstStorage = product.specs && product.specs.storage ? (Array.isArray(product.specs.storage) ? product.specs.storage[0] : product.specs.storage) : null;
+                    const storageVal = (firstStorage && typeof firstStorage === 'object') ? firstStorage.value : String(firstStorage || '');
+                    const storageText = storageVal ? ` (${storageVal})` : '';
                     
                     // Direciona para a página correspondente da categoria com destaque do produto
                     let targetUrl = `${product.category}.html`;
@@ -267,11 +365,26 @@ document.addEventListener('DOMContentLoaded', () => {
                             
                             // 2. Rola e destaca de imediato
                             setTimeout(() => {
+                                const matchName = (nameA, nameB) => {
+                                    if (!nameA || !nameB) return false;
+                                    const clean = (str) => str
+                                        .toLowerCase()
+                                        .replace(/\(destaque\)/gi, '')
+                                        .replace(/\(barrinha\)/gi, '')
+                                        .replace(/\(flip\)/gi, '')
+                                        .replace(/[\s\-_]+/g, '')
+                                        .replace(/256gb|128gb|64gb|512gb|32gb/gi, '')
+                                        .replace(/4g|5g/gi, '')
+                                        .trim();
+                                    const cA = clean(nameA);
+                                    const cB = clean(nameB);
+                                    return cA === cB || cA.includes(cB) || cB.includes(cA);
+                                };
                                 const cards = document.querySelectorAll('.horizontal-card');
                                 let targetCard = null;
                                 for (const card of cards) {
                                     const titleEl = card.querySelector('.horizontal-title');
-                                    if (titleEl && titleEl.textContent.trim().toLowerCase() === product.name.toLowerCase()) {
+                                    if (titleEl && matchName(titleEl.textContent, product.name)) {
                                         targetCard = card;
                                         break;
                                     }
@@ -345,38 +458,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 6. MODAL: SOBRE NÓS
     const sobreNosModal = document.getElementById('sobre-nos-modal');
-    const sobreNosOpenBtn = document.getElementById('footer-sobre-nos-btn');
     const sobreNosCloseBtn = document.getElementById('sobre-nos-close');
     const sobreNosBackBtn = document.getElementById('sobre-nos-back');
 
-    function openSobreNos(e) {
+    window.openSobreNos = function(e) {
         if (e) e.preventDefault();
-        sobreNosModal.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Travar scroll da página
-    }
+        if (sobreNosModal) {
+            sobreNosModal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Travar scroll da página
+        }
+    };
 
-    function closeSobreNos() {
-        sobreNosModal.classList.remove('active');
-        document.body.style.overflow = ''; // Restaurar scroll da página
-    }
+    window.closeSobreNos = function() {
+        if (sobreNosModal) {
+            sobreNosModal.classList.remove('active');
+            document.body.style.overflow = ''; // Restaurar scroll da página
+        }
+    };
 
-    if (sobreNosOpenBtn) sobreNosOpenBtn.addEventListener('click', openSobreNos);
-    if (sobreNosCloseBtn) sobreNosCloseBtn.addEventListener('click', closeSobreNos);
-    if (sobreNosBackBtn) sobreNosBackBtn.addEventListener('click', closeSobreNos);
+    if (sobreNosCloseBtn) sobreNosCloseBtn.addEventListener('click', window.closeSobreNos);
+    if (sobreNosBackBtn) sobreNosBackBtn.addEventListener('click', window.closeSobreNos);
 
     // Fechar ao clicar no overlay (fundo escuro)
     if (sobreNosModal) {
         sobreNosModal.addEventListener('click', (e) => {
-            if (e.target === sobreNosModal) closeSobreNos();
+            if (e.target === sobreNosModal) window.closeSobreNos();
         });
     }
 
     // Fechar com tecla Escape
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && sobreNosModal && sobreNosModal.classList.contains('active')) {
-            closeSobreNos();
+            window.closeSobreNos();
         }
     });
+
+    // Registra manipulador para os botões do Sobre Nós com a classe about-us-trigger
+    document.querySelectorAll('.about-us-trigger').forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            const currentPath = window.location.pathname.toLowerCase();
+            const isHomePage = currentPath === '/' || currentPath.endsWith('index.html') || currentPath === '';
+            if (isHomePage) {
+                e.preventDefault();
+                window.openSobreNos();
+            }
+        });
+    });
+
+    // Abre o modal automaticamente se tiver o parâmetro na URL
+    const aboutParam = new URLSearchParams(window.location.search).get('about');
+    if (aboutParam === 'true') {
+        window.openSobreNos();
+    }
 
     // 7. BEST SELLERS CAROUSEL LOGIC
     const bsTrack = document.getElementById('best-sellers-track');
@@ -838,10 +971,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
 
-                    // Tenta ler capacidade das especificações
-                    const storageLabel = product.specs && product.specs.storage 
+                    const rawStorage = product.specs && product.specs.storage 
                         ? (Array.isArray(product.specs.storage) ? product.specs.storage[0] : product.specs.storage)
-                        : '';
+                        : null;
+                    const storageLabel = (rawStorage && typeof rawStorage === 'object') ? rawStorage.value : String(rawStorage || '');
                     const storageText = storageLabel ? ` (${storageLabel})` : '';
 
                     const waText = encodeURIComponent(`Olá, gostaria de comprar o lançamento ${product.name}${storageText} por R$ ${priceFormatted}`);
@@ -967,6 +1100,86 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Rastrear acesso/visita ao site (exclui visitas de administradores logados)
+    async function trackVisit() {
+        if (!supabase) return;
+        try {
+            // 1. Filtro persistente por localStorage para dispositivos do admin
+            if (localStorage.getItem('is_admin_device') === 'true') {
+                console.log('Dispositivo do administrador detectado por flag local. Acesso não registrado.');
+                return;
+            }
+
+            // 2. Filtro dinâmico por sessão ativa
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                console.log('Sessão administrativa detectada. Visita não será registrada.');
+                localStorage.setItem('is_admin_device', 'true');
+                return;
+            }
+
+            let visitorId = localStorage.getItem('site_visitor_id');
+            if (!visitorId) {
+                visitorId = window.crypto && window.crypto.randomUUID 
+                    ? window.crypto.randomUUID() 
+                    : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                localStorage.setItem('site_visitor_id', visitorId);
+            }
+
+            // 3. Detecção de Dispositivo e SO
+            const ua = navigator.userAgent;
+            let deviceType = 'Desktop';
+            if (/tablet|ipad|playbook|silk/i.test(ua)) {
+                deviceType = 'Tablet';
+            } else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle/i.test(ua)) {
+                deviceType = 'Mobile';
+            }
+
+            let osName = 'Desconhecido';
+            if (/Windows/i.test(ua)) osName = 'Windows';
+            else if (/Android/i.test(ua)) osName = 'Android';
+            else if (/iPhone|iPad|iPod/i.test(ua)) osName = 'iOS';
+            else if (/Macintosh/i.test(ua)) osName = 'macOS';
+            else if (/Linux/i.test(ua)) osName = 'Linux';
+
+            // 4. Detecção de Localização por IP (Cidade, Estado, País) com timeout de 3 segundos
+            let city = null;
+            let region = null;
+            let country = null;
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+                const locRes = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (locRes.ok) {
+                    const locData = await locRes.json();
+                    city = locData.city || null;
+                    region = locData.region_code || locData.region || null;
+                    country = locData.country_name || null;
+                }
+            } catch (ipErr) {
+                console.warn('Erro ao obter geolocalização:', ipErr);
+            }
+
+            await supabase.from('site_accesses').insert({
+                visitor_id: visitorId,
+                device_type: deviceType,
+                os_name: osName,
+                location_city: city,
+                location_region: region,
+                location_country: country
+            });
+        } catch (err) {
+            console.warn('Erro ao registrar acesso:', err);
+        }
+    }
+
+    trackVisit();
+
     // Executa setup dos links com pequeno delay para garantir carregamento de outros scripts
     setTimeout(setupHeaderLinks, 100);
 });
+

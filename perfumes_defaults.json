@@ -1,0 +1,930 @@
+[
+  {
+    "name": "Laguna Eau de Toilette",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Salvador Dali\nVolume: 125 ml\nFragrância Floral Frutal Feminina Clássica\nNotas de limão marroquino, abacaxi, pêssego e ameixa",
+    "price": 250,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "125 ml"
+      ]
+    }
+  },
+  {
+    "name": "Cabotine de Grès Eau de Toilette",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Parfums Grès\nVolume: 100 ml\nFragrância Floral Feminina Icônica\nNotas de gengibre, ylang-ylang, tuberosa e sândalo",
+    "price": 199.99,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Classique Princesse Marina de Bourbon EDP",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Marina de Bourbon\nVolume: 100 ml\nFragrância Floral Frutal Feminina de Realeza\nNotas de baunilha, melancia, pêssego e maracujá",
+    "price": 250,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Rouge Royal Princesse Marina de Bourbon EDP",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Marina de Bourbon\nVolume: 100 ml\nFragrância Floral Frutal Gourmet Feminina\nNotas de morango silvestre, casca de limão e jasmim",
+    "price": 259,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Believe Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Britney Spears\nVolume: 100 ml\nFragrância Floral Frutal Feminina Radiante\nNotas de goiaba, tangerina, flor de laranjeira e patchouli",
+    "price": 230,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Aussie Moist Shampoo",
+    "category": "perfumes",
+    "sub_category": "cosmeticos",
+    "description": "Marca: Aussie\nVolume: 360 ml\nHidratação profunda para cabelos secos\nFórmula com óleo de semente de jojoba australiana",
+    "price": 59,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "360 ml"
+      ]
+    }
+  },
+  {
+    "name": "Aussie Moist Conditioner",
+    "category": "perfumes",
+    "sub_category": "cosmeticos",
+    "description": "Marca: Aussie\nVolume: 360 ml\nCondicionamento intensivo e brilho imediato\nFórmula rica em ativos hidratantes e abacate",
+    "price": 59,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "360 ml"
+      ]
+    }
+  },
+  {
+    "name": "Aussie 3 Minute Miracle Tratamento",
+    "category": "perfumes",
+    "sub_category": "cosmeticos",
+    "description": "Marca: Aussie\nVolume: 236 ml\nTratamento reconstrutor intensivo rápido\nRestaura fios danificados em apenas 3 minutos",
+    "price": 69,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "236 ml"
+      ]
+    }
+  },
+  {
+    "name": "Kit Aussie Moist 3 em 1",
+    "category": "perfumes",
+    "sub_category": "cosmeticos",
+    "description": "Marca: Aussie\nKit completo: Shampoo (360ml) + Condicionador (360ml) + Tratamento (236ml)\nRotina completa de hidratação intensa para cabelos danificados",
+    "price": 165,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "Kit 3 em 1"
+      ]
+    }
+  },
+  {
+    "name": "Aussie Moist Shampoo (Tamanho Família)",
+    "category": "perfumes",
+    "sub_category": "cosmeticos",
+    "description": "Marca: Aussie\nVolume: 778 ml\nShampoo de hidratação extrema em tamanho econômico\nIdeal para cabelos secos e uso diário familiar",
+    "price": 113,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "778 ml"
+      ]
+    }
+  },
+  {
+    "name": "Aussie Moist Conditioner (Tamanho Família)",
+    "category": "perfumes",
+    "sub_category": "cosmeticos",
+    "description": "Marca: Aussie\nVolume: 778 ml\nCondicionador super hidratante em frasco grande\nRendimento estendido para hidratação frequente",
+    "price": 113,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "778 ml"
+      ]
+    }
+  },
+  {
+    "name": "Cuba Gold Eau de Toilette",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Cuba Paris\nVolume: 100 ml\nFragrância Amadeirada Masculina Marcante\nAroma clássico em formato icônico de charuto",
+    "price": 75,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Cuba Paris Colorido EDP/EDT",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Cuba Paris\nVolume: 100 ml\nFragrância importada da linha colorida Cuba Paris\nConsulte fragrâncias disponíveis (Jungle, Orange, VIP)",
+    "price": 75,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Cuba Gold Eau de Toilette (Dourado)",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Cuba Paris\nVolume: 100 ml\nAroma amadeirado clássico com notas de bergamota e jasmim\nDesign exclusivo e ótima projeção",
+    "price": 75,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Cuba Heartbreaker Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Cuba Paris\nVolume: 100 ml\nFragrância Floral Frutal Feminina Romântica\nNotas de pimenta rosa, groselha vermelha e jasmim",
+    "price": 75,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Yara Eau de Parfum (Rosa)",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nFragrância Âmbar Baunilha Feminina de Alto Sucesso\nNotas de heliotrópio, tangerina, orquídea e baunilha\nDestaque: Mais Procurado",
+    "price": 245,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Yara Moi Eau de Parfum (Bege)",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nFragrância Âmbar Amadeirada Feminina Intensa\nNotas de pêssego, caramelo, âmbar e sândalo",
+    "price": 245,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Asad Zanzibar Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nFragrância aromática marinha fresca\nNotas de coco, água salgada, lavanda e baunilha\nDestaque: Lançamento",
+    "price": 263,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": true,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Asad Bourbon Eau de Parfum (Marrom)",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nFragrância quente com notas de baunilha de bourbon e noz-moscada\nIdeal para ocasiões sofisticadas e uso noturno",
+    "price": 289,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Asad Eau de Parfum (Tradicional)",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nFamoso oriental masculino com alta similaridade e performance\nNotas especiadas, patchouli, âmbar e baunilha negra\nDestaque: Destaque Árabe",
+    "price": 275,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Fakhar Lattafa For Women",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nFragrância Floral Feminina Marcante e Luxuosa\nNotas de jasmim, flor de laranjeira, tuberosa e vetiver",
+    "price": 290,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Fakhar Lattafa For Men",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nFragrância Oriental Masculina com projeção intensa\nNotas frutadas combinadas com noz-moscada, fava tonka e patchouli",
+    "price": 249,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Duha Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nFragrância floral oriental com excelente projeção\nNotas de topo cítricas com corpo floral aveludado",
+    "price": 215,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Sabah Valentine Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nFragrância romântica doce com toques de frutas vermelhas\nIdeal para momentos marcantes e clima romântico",
+    "price": 250,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Sabah Al Ward Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nOriental Floral Feminino elegante e sensual\nCombinação rica de pimenta rosa, cacau e baunilha",
+    "price": 225,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Malik Al Tayoor Concentré (Preto)",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nAroma aromático amadeirado masculino potente\nNotas herbais frescas combinadas com couro e âmbar",
+    "price": 199,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Shaghaf Al Ward Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nFragrância floral frutal feminina alegre e sofisticada\nNotas marcantes de rosa búlgara, jasmim e baunilha",
+    "price": 215,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Mystery Intense Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nPerfume floral amadeirado marcante\nToque misterioso com excelente fixação na pele",
+    "price": 215,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Al Noble Safeer Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nFragrância aromática verde e amadeirada compartilhavel\nNotas herbáceas frescas com fundo de zimbro e olíbano",
+    "price": 199,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Al Noble Ameer Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nOriental amadeirado especiado rico e aveludado\nNotas de especiarias finas, resinas e madeiras nobres",
+    "price": 237,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Al Noble Wazeer Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nOriental frutado amadeirado versátil\nEquilíbrio de notas de topo frutadas e fundo de caramelo e cedro",
+    "price": 199,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Mystery Eau de Parfum (Roxo)",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nOriental especiado com aroma marcante de mistério\nNotas de canela, mel e flor de laranjeira",
+    "price": 199,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Durrat Al Aroos Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nFloral aveludado levemente adocicado e limpo\nFragrância delicada e de alta fixação para o dia a dia",
+    "price": 215,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Watani Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nFragrância majestosa com notas orientais e florais\nToques de patchouli, almíscar e baunilha",
+    "price": 225,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Watani Intense Gold EDP",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nVersão intensa e dourada com notas adocicadas profundas\nPerfeito para eventos noturnos e noites frias",
+    "price": 199,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Thahaani Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nAroma nobre amadeirado e especiado refinado\nPresença de madeiras cremosas e especiarias suaves",
+    "price": 230,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Attar Al Wesal Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nFragrância sedutora magnética inspirada no Ultra Male\nNotas de pera, hortelã, canela e baunilha negra",
+    "price": 230,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Bareeq Al Dhahab Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nAroma opulento com açafrão, âmbar e rosas árabes\nFragrância potente e de altíssima fixação",
+    "price": 199,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Kenz Al Malik Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nOriental aromático fresco com notas amadeiradas de fundo\nEquilíbrio entre o frescor cítrico e a sensualidade oriental",
+    "price": 215,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Delilah Pour Femme Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Maison Alhambra\nVolume: 100 ml\nInspirado em Delina: fragrância floral rica de lichia e ruibarbo\nExtrema delicadeza com notas de rosa turca e baunilha\nDestaque: Sucesso Feminino",
+    "price": 290,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Eclaire Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nGourmand irresistível com caramelo, leite e notas de açúcar\nSensação aconchegante e extremamente doce\nDestaque: Tendência",
+    "price": 290,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Teriaq Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Lattafa\nVolume: 100 ml\nCriação exclusiva do perfumista Quentin Bisch para Lattafa\nFragrância complexa de mel, camurça, caramelo e notas florais\nDestaque: Alta Perfumaria",
+    "price": 290,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Alpine Sport Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Maison Alhambra\nVolume: 100 ml\nInspirado no Allure Homme Sport: aroma cítrico e amadeirado fresco\nExcelente para uso diário e prática esportiva",
+    "price": 215,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Ameerati Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Al Wataniah\nVolume: 100 ml\nOriental marcante com especiarias e toques adocicados\nFragrância de alta performance na pele",
+    "price": 219,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Laloa Sexy Eau de Toilette",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Via Paris\nVolume: 100 ml\nFragrância floral oriental doce e descontraída\nCombinação perfeita de notas florais e frutadas",
+    "price": 145,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "UDV For Men Eau de Toilette",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Ulric de Varens\nVolume: 100 ml\nClássico fougère aromático masculino de excelente custo-benefício\nNotas de hortelã, sálvia, vetiver e patchouli",
+    "price": 145,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Pure Seduction Fragrance Mist",
+    "category": "perfumes",
+    "sub_category": "cosmeticos",
+    "description": "Marca: Victoria's Secret\nVolume: 250 ml\nFamoso body splash com notas de ameixa vermelha e freesia\nSensação fresca de banho tomado e fragrância adocicada",
+    "price": 199,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "250 ml"
+      ]
+    }
+  },
+  {
+    "name": "Brut Classic Cologne",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Fabergé\nVolume: 100 ml\nClássico absoluto da perfumaria masculina desde 1964\nFragrância fougère fresca com notas herbais intensas",
+    "price": 79,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Asad Perfume Body Spray",
+    "category": "perfumes",
+    "sub_category": "cosmeticos",
+    "description": "Marca: Lattafa\nVolume: 200 ml\nDesodorante aerosol com a fragrância marcante do Asad\nProteção e perfumação ao longo do dia",
+    "price": 65,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "200 ml"
+      ]
+    }
+  },
+  {
+    "name": "Khamrah Perfume Body Spray",
+    "category": "perfumes",
+    "sub_category": "cosmeticos",
+    "description": "Marca: Lattafa\nVolume: 200 ml\nDesodorante aerosol com a fragrância quente e doce do Khamrah\nPerfuma e protege com as mesmas notas do EDP",
+    "price": 65,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "200 ml"
+      ]
+    }
+  },
+  {
+    "name": "Midnight Fantasy Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Britney Spears\nVolume: 100 ml\nDoce de frutas vermelhas e ameixa negra icônico\nExcelente projeção e apelo sensual",
+    "price": 257,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Fantasy Britney Spears",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Britney Spears\nVolume: 100 ml\nO mais famoso gourmand da cultura pop de chocolate branco e kiwi\nFragrância doce marcante inconfundível\nDestaque: Clássico Pop",
+    "price": 279,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Azzaro Pour Homme Eau de Toilette",
+    "category": "perfumes",
+    "sub_category": "importados",
+    "description": "Marca: Azzaro\nVolume: 100 ml\nFamoso fougère aromático masculino clássico de alta classe\nNotas de lavanda, anis estrelado, couro e patchouli\nDestaque: Clássico Masculino",
+    "price": 277,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Club de Nuit Island Bliss EDP",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Armaf\nVolume: 100 ml\nColeção Delights: Fragrância tropical cremosa de coco e baunilha\nNotas frutadas silvestres com flores e base adocicada quente\nDestaque: Coleção Delights",
+    "price": 345,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Club de Nuit Yum Yum EDP",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Armaf\nVolume: 100 ml\nColeção Delights: Doce gourmand de cereja, frutas e baunilha\nFragrância vibrante divertida e de ótima projeção\nDestaque: Coleção Delights",
+    "price": 345,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "100 ml"
+      ]
+    }
+  },
+  {
+    "name": "Club de Nuit Woman Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Armaf\nVolume: 105 ml\nChipre Floral Feminino elegante e aveludado\nNotas de pêssego, rosa, jasmim, patchouli e baunilha",
+    "price": 345,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "105 ml"
+      ]
+    }
+  },
+  {
+    "name": "Club de Nuit Iconic Eau de Parfum",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Armaf\nVolume: 105 ml\nFragrância amadeirada cítrica fresca inspirada no Bleu de Chanel\nExcelente fixação e aroma sofisticado para todas as estações",
+    "price": 345,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "105 ml"
+      ]
+    }
+  },
+  {
+    "name": "Club de Nuit Intense Man EDT",
+    "category": "perfumes",
+    "sub_category": "perfumes-arabes",
+    "description": "Marca: Armaf\nVolume: 105 ml\nUm dos maiores sucessos mundiais inspirado no Creed Aventus\nNotas de abacaxi, bergamota, bétula, patchouli e almíscar\nDestaque: Campeão de Vendas",
+    "price": 345,
+    "original_price": null,
+    "is_best_seller": false,
+    "is_new_launch": false,
+    "image_url": null,
+    "specs": {
+      "storage": [
+        "105 ml"
+      ]
+    }
+  }
+]

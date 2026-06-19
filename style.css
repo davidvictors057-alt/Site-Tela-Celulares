@@ -201,12 +201,14 @@ button {
     z-index: 1000;
 }
 
-/* Mega Menu Exclusivo para Celulares */
+/* Mega Menu Exclusivo para Celulares e Perfumes */
 .mega-menu {
     position: absolute;
     top: 100%;
-    left: 24px;
-    right: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    width: calc(100% - 48px);
+    max-width: 1200px;
     background-color: #ffffff;
     border: 1px solid var(--border-color);
     border-radius: 12px;
@@ -217,17 +219,21 @@ button {
     gap: 32px;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(12px);
     transition: opacity var(--transition-fast) ease, transform var(--transition-fast) ease, visibility var(--transition-fast) ease;
     z-index: 1000;
 }
 
 /* Exibe ao passar o mouse */
-.has-dropdown:hover .dropdown-menu,
-.has-mega-dropdown:hover .mega-menu {
+.has-dropdown:hover .dropdown-menu {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+}
+
+.has-mega-dropdown:hover .mega-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
 }
 
 /* Colunas do Mega Menu */
@@ -2663,6 +2669,23 @@ button {
 /* Tabela de Produtos */
 .admin-table-container {
     overflow-x: auto;
+}
+
+.admin-table-scroll-container {
+    max-height: 450px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.admin-table-scroll-container .admin-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: var(--bg-secondary);
+    box-shadow: inset 0 -1px 0 var(--border-color);
 }
 
 .admin-table {

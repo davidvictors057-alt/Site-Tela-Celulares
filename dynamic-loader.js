@@ -15,8 +15,48 @@
         else if (path.includes('baterias')) category = 'baterias';
         else if (path.includes('acessorios')) category = 'acessorios';
         else if (path.includes('informatica')) category = 'informatica';
+        else if (path.includes('moda')) category = 'moda';
+        else if (path.includes('perfumes')) category = 'perfumes';
+        else if (path.includes('outros')) category = 'outros';
         
         if (!category) return;
+
+        // Renderiza Skeleton Loaders nas páginas com carregamento dinâmico para evitar Layout Shifts do footer
+        const allGrids = document.querySelectorAll('.category-grid, .products-grid');
+        const isDynamicPage = ['perfumes', 'moda', 'outros'].includes(category);
+        
+        if (isDynamicPage && allGrids.length > 0) {
+            allGrids.forEach(grid => {
+                grid.innerHTML = `
+                    <div class="skeleton-card">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-info">
+                            <div class="skeleton-text skeleton-title"></div>
+                            <div class="skeleton-text skeleton-badge"></div>
+                            <div class="skeleton-text skeleton-bullet"></div>
+                            <div class="skeleton-text skeleton-bullet-short"></div>
+                            <div class="skeleton-price-row">
+                                <div class="skeleton-text skeleton-price"></div>
+                                <div class="skeleton-text skeleton-btn"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-info">
+                            <div class="skeleton-text skeleton-title"></div>
+                            <div class="skeleton-text skeleton-badge"></div>
+                            <div class="skeleton-text skeleton-bullet"></div>
+                            <div class="skeleton-text skeleton-bullet-short"></div>
+                            <div class="skeleton-price-row">
+                                <div class="skeleton-text skeleton-price"></div>
+                                <div class="skeleton-text skeleton-btn"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
         
         // Check if Supabase JS Client is loaded
         if (typeof window.supabase === 'undefined') return;
@@ -31,7 +71,22 @@
                 .order('created_at', { ascending: false });
                 
             if (error) throw error;
-            if (!products || products.length === 0) return; // Fallback: keep static HTML
+            
+            if (!products || products.length === 0) {
+                allGrids.forEach(grid => {
+                    grid.innerHTML = `
+                        <div class="no-products-message" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #86868b; font-family: 'Outfit', sans-serif;">
+                            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 15px; color: #d2d2d7; display: block;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                            <p style="font-size: 1.1rem; font-weight: 500; margin-bottom: 5px;">Nenhum produto disponível</p>
+                            <p style="font-size: 0.9rem;">Estamos preparando novidades para esta categoria. Volte em breve!</p>
+                        </div>
+                    `;
+                });
+                return;
+            }
             
             // 3. Group products by sub_category
             const groups = {};
@@ -46,8 +101,13 @@
                 // Find subcategory element by ID (e.g. #realme, #xiaomi, #entrada, #amazon-fire, etc.)
                 let sectionId = sub;
                 // Map custom subcategories to element IDs if needed
-                if (sub === 'xiaomi') sectionId = 'xiaomi';
-                else if (sub === 'amazon-fire') sectionId = 'amazon-fire';
+                if (category === 'tablets') {
+                    if (sub === 'xiaomi') sectionId = 'xiaomi-tablets';
+                    else if (sub === 'entrada') sectionId = 'amazon-fire';
+                } else {
+                    if (sub === 'xiaomi') sectionId = 'xiaomi';
+                    else if (sub === 'amazon-fire') sectionId = 'amazon-fire';
+                }
                 
                 const section = document.getElementById(sectionId) || document.getElementById(sub);
                 if (!section) return;
@@ -67,18 +127,22 @@
                     const specs = product.specs || {};
                     let colorsHtml = '';
                     
-                    // Normaliza cores para um formato uniforme: [{ hex, name }]
+                    // Normaliza cores para um formato uniforme: [{ hex, name, image_url }]
                     let normalizedColors = [];
                     if (specs.colors) {
                         if (Array.isArray(specs.colors)) {
                             normalizedColors = specs.colors.map(c => {
                                 if (typeof c === 'object' && c !== null) {
-                                    return { hex: c.hex || '#000000', name: c.name || 'Cor' };
+                                    return { 
+                                        hex: c.hex || '#000000', 
+                                        name: c.name || 'Cor', 
+                                        image_url: c.image_url || null 
+                                    };
                                 }
-                                return { hex: '#000000', name: String(c) };
+                                return { hex: '#000000', name: String(c), image_url: null };
                             });
                         } else if (typeof specs.colors === 'string') {
-                            normalizedColors = specs.colors.split(',').map(c => c.trim()).filter(c => c !== '').map(c => ({ hex: '#000000', name: c }));
+                            normalizedColors = specs.colors.split(',').map(c => c.trim()).filter(c => c !== '').map(c => ({ hex: '#000000', name: c, image_url: null }));
                         }
                     }
 
@@ -95,7 +159,8 @@
                             const cleanColor = colorObj.name.toLowerCase().trim();
                             // Se colorObj.hex é válido e diferente de '#000000', usamos ele, senão tentamos o mapeamento
                             const hex = (colorObj.hex && colorObj.hex !== '#000000') ? colorObj.hex : (colorMap[cleanColor] || '#000000');
-                            return `<span class="color-dot ${idx === 0 ? 'active' : ''}" style="background-color: ${hex};" title="${colorObj.name}"></span>`;
+                            const colorImg = colorObj.image_url || '';
+                            return `<span class="color-dot ${idx === 0 ? 'active' : ''}" style="background-color: ${hex};" title="${colorObj.name}" data-image="${colorImg}"></span>`;
                         }).join('');
                         
                         colorsHtml = `
@@ -113,15 +178,21 @@
                     let normalizedStorage = [];
                     if (specs.storage) {
                         if (Array.isArray(specs.storage)) {
-                            normalizedStorage = specs.storage;
+                            normalizedStorage = specs.storage.map(s => {
+                                if (typeof s === 'object' && s !== null) {
+                                    return { value: s.value || '', price: s.price || null };
+                                }
+                                return { value: String(s), price: null };
+                            });
                         } else if (typeof specs.storage === 'string') {
-                            normalizedStorage = [specs.storage];
+                            normalizedStorage = specs.storage.split(',').map(s => s.trim()).filter(s => s !== '').map(s => ({ value: s, price: null }));
                         }
                     }
 
                     if (normalizedStorage.length > 0) {
                         const badges = normalizedStorage.map((st, idx) => {
-                            return `<span class="storage-badge ${idx === 0 ? 'active' : ''}">${st}</span>`;
+                            const priceAttr = st.price ? ` data-price="${st.price}"` : '';
+                            return `<span class="storage-badge ${idx === 0 ? 'active' : ''}"${priceAttr}>${st.value}</span>`;
                         }).join('');
                         storageHtml = `
                             <div class="storage-selector">
@@ -136,15 +207,37 @@
                         specsHtml = product.description.split('\n').map(line => `<li>${line.trim()}</li>`).join('');
                     }
                     
-                    const priceFormatted = parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-                    const storageLabel = normalizedStorage.length > 0 ? ` (${normalizedStorage[0]})` : '';
-                    const waText = encodeURIComponent(`Olá, gostaria de comprar o ${product.name}${storageLabel} por R$ ${priceFormatted}`);
+                    // Calculate active/initial price
+                    let initialPrice = parseFloat(product.price);
+                    let initialStorageLabel = '';
+                    if (normalizedStorage.length > 0) {
+                        initialStorageLabel = ` (${normalizedStorage[0].value})`;
+                        if (normalizedStorage[0].price) {
+                            initialPrice = parseFloat(normalizedStorage[0].price);
+                        }
+                    }
+                    
+                    let initialColorLabel = '';
+                    const activeColorObj = normalizedColors.find((_, idx) => idx === 0);
+                    if (activeColorObj) {
+                        initialColorLabel = ` - Cor: ${activeColorObj.name}`;
+                    }
+
+                    const priceFormatted = initialPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    const waText = encodeURIComponent(`Olá, gostaria de comprar o ${product.name}${initialStorageLabel}${initialColorLabel} por R$ ${priceFormatted}`);
                     const waLink = `https://wa.me/5517997559675?text=${waText}`;
                     
                     // mix-blend-mode: multiply blends the white image background perfectly into the grey cards!
+                    const defaultImg = category === 'perfumes' ? 'public/carousel/perfume_placeholder.png' : 'public/carousel/realme_c85.png';
+                    const initialImg = (activeColorObj && activeColorObj.image_url) 
+                        ? activeColorObj.image_url 
+                        : (product.image_url || defaultImg);
+                        
+                    card.setAttribute('data-base-price', product.price);
+                    card.setAttribute('data-product-name', product.name);
                     card.innerHTML = `
                         <div class="horizontal-image-container">
-                            <img src="${product.image_url || 'public/carousel/realme_c85.png'}" alt="${product.name}" style="mix-blend-mode: multiply;">
+                            <img src="${initialImg}" alt="${product.name}" style="mix-blend-mode: multiply;" data-default-src="${product.image_url || defaultImg}">
                         </div>
                         <div class="horizontal-info">
                             <h3 class="horizontal-title">${product.name}</h3>
@@ -163,6 +256,51 @@
                     grid.appendChild(card);
                 });
                 
+                // Helper to update price and WhatsApp link dynamically
+                function updateCardBuyLinkAndPrice(card) {
+                    if (!card) return;
+                    const basePrice = parseFloat(card.getAttribute('data-base-price'));
+                    const productName = card.getAttribute('data-product-name');
+                    
+                    // Capacity
+                    const activeStorage = card.querySelector('.storage-badge.active');
+                    let storageLabel = '';
+                    let priceToUse = basePrice;
+                    if (activeStorage) {
+                        storageLabel = ` (${activeStorage.textContent})`;
+                        const customPrice = activeStorage.getAttribute('data-price');
+                        if (customPrice) {
+                            priceToUse = parseFloat(customPrice);
+                        }
+                    }
+                    
+                    // Color
+                    const activeColor = card.querySelector('.color-dot.active');
+                    let colorLabel = '';
+                    if (activeColor) {
+                        const colorTitle = activeColor.getAttribute('title');
+                        if (colorTitle) {
+                            colorLabel = ` - Cor: ${colorTitle}`;
+                        }
+                    }
+                    
+                    // Format price
+                    const priceFormatted = priceToUse.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    
+                    // Update price element
+                    const priceEl = card.querySelector('.horizontal-price');
+                    if (priceEl) {
+                        priceEl.textContent = `R$ ${priceFormatted}`;
+                    }
+                    
+                    // Update WhatsApp buy link
+                    const buyBtn = card.querySelector('.horizontal-buy-btn');
+                    if (buyBtn) {
+                        const waText = encodeURIComponent(`Olá, gostaria de comprar o ${productName}${storageLabel}${colorLabel} por R$ ${priceFormatted}`);
+                        buyBtn.href = `https://wa.me/5517997559675?text=${waText}`;
+                    }
+                }
+
                 // Rebind interactive selectors (Color dots)
                 grid.querySelectorAll('.color-dot').forEach(dot => {
                     dot.addEventListener('click', function() {
@@ -173,6 +311,23 @@
                         const label = this.closest('.color-selector').querySelector('span');
                         const colorName = this.getAttribute('title');
                         label.textContent = `Cor: ${colorName}`;
+                        
+                        // Atualiza a imagem do card se houver foto específica para a cor selecionada
+                        const card = this.closest('.horizontal-card');
+                        if (card) {
+                            const imgEl = card.querySelector('.horizontal-image-container img');
+                            if (imgEl) {
+                                const colorImg = this.getAttribute('data-image');
+                                if (colorImg) {
+                                    imgEl.src = colorImg;
+                                } else {
+                                    // Se a cor selecionada não tiver foto, volta para a imagem padrão do produto
+                                    const defaultSrc = imgEl.getAttribute('data-default-src');
+                                    if (defaultSrc) imgEl.src = defaultSrc;
+                                }
+                            }
+                            updateCardBuyLinkAndPrice(card);
+                        }
                     });
                 });
                 
@@ -182,72 +337,19 @@
                         const parent = this.closest('.storage-selector');
                         parent.querySelectorAll('.storage-badge').forEach(b => b.classList.remove('active'));
                         this.classList.add('active');
+                        
+                        const card = this.closest('.horizontal-card');
+                        if (card) {
+                            updateCardBuyLinkAndPrice(card);
+                        }
                     });
                 });
             });
 
-            // 5. Destaca e rola até o produto de forma global
-            window.highlightProduct = function(name) {
-                if (!name) return;
-                name = name.trim();
-                
-                // Encontra qual é a subcategoria (grupo) do produto destacado para garantir que a aba esteja ativa
-                const targetProduct = products.find(p => p.name.toLowerCase().trim() === name.toLowerCase());
-                if (targetProduct) {
-                    const sub = targetProduct.sub_category || 'default';
-                    let sectionId = sub;
-                    if (sub === 'xiaomi') sectionId = 'xiaomi';
-                    else if (sub === 'amazon-fire') sectionId = 'amazon-fire';
-                    
-                    // Clica no botão correspondente da aba para ativá-la e exibi-la
-                    const categoryBtn = document.querySelector(`.category-btn[onclick*="${sub}"]`);
-                    if (categoryBtn) {
-                        // Remove active de todos os botões e seções
-                        document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-                        document.querySelectorAll('.category-section').forEach(sec => sec.classList.remove('active'));
-                        
-                        // Ativa a aba
-                        categoryBtn.classList.add('active');
-                        const section = document.getElementById(sectionId) || document.getElementById(sub);
-                        if (section) {
-                            section.classList.add('active');
-                        }
-                    }
-                }
-
-                setTimeout(() => {
-                    const cards = document.querySelectorAll('.horizontal-card');
-                    let targetCard = null;
-                    for (const card of cards) {
-                        const titleEl = card.querySelector('.horizontal-title');
-                        if (titleEl && titleEl.textContent.trim().toLowerCase() === name.toLowerCase()) {
-                            targetCard = card;
-                            break;
-                        }
-                    }
-                    
-                    if (targetCard) {
-                        // Rola até o card correspondente de forma suave e centralizada
-                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        
-                        // Aplica borda de destaque e sombra temporária premium (pulso laranja)
-                        targetCard.style.outline = '3px solid var(--accent)';
-                        targetCard.style.boxShadow = '0 0 25px rgba(242, 92, 5, 0.7)';
-                        targetCard.style.transform = 'scale(1.03)';
-                        targetCard.style.transition = 'outline 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease';
-                        
-                        setTimeout(() => {
-                            targetCard.style.outline = '';
-                            targetCard.style.boxShadow = '';
-                            targetCard.style.transform = '';
-                        }, 3500);
-                    }
-                }, 200); // Pequeno delay para garantir renderização e troca de aba
-            };
-
+            // 5. Aciona o destaque de produtos global
             const urlParams = new URLSearchParams(window.location.search);
             const highlightName = urlParams.get('highlight');
-            if (highlightName) {
+            if (highlightName && typeof window.highlightProduct === 'function') {
                 window.highlightProduct(highlightName);
             }
             

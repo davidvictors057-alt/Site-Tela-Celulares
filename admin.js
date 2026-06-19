@@ -256,6 +256,11 @@ async function initAdmin() {
         importBtn.addEventListener('click', syncAllProductsFromHTML);
     }
 
+    const refreshVisitsBtn = document.getElementById('btn-refresh-visits');
+    if (refreshVisitsBtn) {
+        refreshVisitsBtn.addEventListener('click', loadVisits);
+    }
+
     const searchInput = document.getElementById('admin-search-input');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -294,6 +299,7 @@ async function initAdmin() {
         }
         
         currentSession = session;
+        localStorage.setItem('is_admin_device', 'true');
         
         // Carrega produtos cadastrados do Supabase
         loadProducts();
@@ -303,7 +309,7 @@ async function initAdmin() {
         if (tableBody) {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="4" class="admin-no-products" style="color: #d9534f;">
+                    <td colspan="5" class="admin-no-products" style="color: #d9534f;">
                         Erro na conexão com o banco de dados: ${err.message}
                     </td>
                 </tr>
@@ -327,7 +333,7 @@ async function loadProducts() {
     if (!supabaseClient) {
         tableBody.innerHTML = `
             <tr>
-                <td colspan="4" class="admin-no-products" style="color: #d9534f;">
+                <td colspan="5" class="admin-no-products" style="color: #d9534f;">
                     Erro: Supabase não inicializado. Verifique a conexão.
                 </td>
             </tr>
@@ -352,7 +358,7 @@ async function loadProducts() {
         displayProductsList(productsList);
     } catch (err) {
         console.error('Erro ao buscar produtos:', err);
-        tableBody.innerHTML = `<tr><td colspan="4" class="admin-no-products" style="color: #d9534f;">Erro ao buscar produtos: ${err.message}</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="5" class="admin-no-products" style="color: #d9534f;">Erro ao buscar produtos: ${err.message}</td></tr>`;
     }
 }
 
@@ -361,24 +367,37 @@ function displayProductsList(products) {
     const tableBody = document.getElementById('products-table-body');
     if (!tableBody) return;
     
+    // Atualiza o contador de produtos cadastrados
+    const countValEl = document.getElementById('product-count-val');
+    if (countValEl) {
+        const searchInput = document.getElementById('admin-search-input');
+        const query = searchInput ? searchInput.value.trim() : '';
+        if (query !== '') {
+            countValEl.parentElement.innerHTML = `Mostrando <strong style="color: var(--text-primary);">${products.length}</strong> de <strong style="color: var(--text-primary);">${productsList.length}</strong> produtos encontrados`;
+        } else {
+            countValEl.parentElement.innerHTML = `Total: <strong style="color: var(--text-primary);">${productsList.length}</strong> produtos cadastrados`;
+        }
+    }
+    
     tableBody.innerHTML = '';
     
     if (products.length === 0) {
         tableBody.innerHTML = `
             <tr>
-                <td colspan="4" class="admin-no-products">Nenhum produto encontrado.</td>
+                <td colspan="5" class="admin-no-products">Nenhum produto encontrado.</td>
             </tr>
         `;
         return;
     }
     
-    products.forEach(product => {
+    products.forEach((product, idx) => {
         const row = document.createElement('tr');
         
         // Thumbnail do produto
         const imageSrc = product.image_url || 'public/carousel/realme_c85.png';
         
         row.innerHTML = `
+            <td style="font-weight: 600; color: var(--text-secondary);">${idx + 1}</td>
             <td>
                 <div class="admin-product-item">
                     <div class="admin-product-thumb">
@@ -512,7 +531,13 @@ function setupGenericImageProcessor(inputEl, previewPanel, previewImg, statusBad
             
             const dotIdx = filename.lastIndexOf('.');
             const nameWithoutExt = dotIdx !== -1 ? filename.substring(0, dotIdx) : filename;
-            const finalName = `${Date.now()}_${options.prefix}_${nameWithoutExt}.png`;
+            const sanitizedName = nameWithoutExt
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-zA-Z0-9_\-]/g, '_')
+                .replace(/__+/g, '_')
+                .replace(/^_+|_+$/g, '');
+            const finalName = `${Date.now()}_${options.prefix}_${sanitizedName}.png`;
             
             options.onComplete(blob, finalName);
             
@@ -590,7 +615,10 @@ function setupImageProcessor() {
 
 // Variáveis e funções para controle das tags dinâmicas no cadastro
 let activeVariations = [];
-let activeColors = []; // [{ hex: "#000000", name: "Preto" }]
+let activeColors = []; // [{ hex: "#000000", name: "Preto", image_url: null, tempBlob: null, tempName: null }]
+
+let tempColorImageBlob = null;
+let tempColorImageName = '';
 
 function renderVariations() {
     const container = document.getElementById('variations-container');
@@ -600,8 +628,13 @@ function renderVariations() {
     activeVariations.forEach((val, idx) => {
         const tag = document.createElement('div');
         tag.className = 'admin-tag-item';
+        // Suporta tanto o novo formato de objeto { value, price } quanto strings legadas
+        const value = typeof val === 'object' && val !== null ? val.value : String(val);
+        const price = typeof val === 'object' && val !== null ? val.price : null;
+        const priceLabel = price ? ` (R$ ${parseFloat(price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })})` : '';
+        
         tag.innerHTML = `
-            <span>${val}</span>
+            <span>${value}${priceLabel}</span>
             <button type="button" class="admin-tag-remove-btn" onclick="removeVariation(${idx})">&times;</button>
         `;
         container.appendChild(tag);
@@ -621,9 +654,13 @@ function renderColors() {
     activeColors.forEach((color, idx) => {
         const tag = document.createElement('div');
         tag.className = 'admin-color-tag-item';
+        const hasPhoto = color.image_url || color.tempBlob;
+        const photoIcon = hasPhoto 
+            ? `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="var(--accent)" stroke-width="2.5" style="margin-left: 5px; vertical-align: middle;" title="Possui foto da cor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>` 
+            : '';
         tag.innerHTML = `
             <span class="admin-color-dot-preview" style="background-color: ${color.hex};"></span>
-            <span>${color.name}</span>
+            <span>${color.name}${photoIcon}</span>
             <button type="button" class="admin-tag-remove-btn" onclick="removeColor(${idx})">&times;</button>
         `;
         container.appendChild(tag);
@@ -635,6 +672,62 @@ window.removeColor = function(index) {
     renderColors();
 };
 
+// Processador e compressão de foto de cor via Canvas
+function processColorImage(img, maxDim, filename) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    let width = img.width;
+    let height = img.height;
+    
+    if (width > height) {
+        if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+        }
+    } else {
+        if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+        }
+    }
+    
+    canvas.width = width;
+    canvas.height = height;
+    ctx.drawImage(img, 0, 0, width, height);
+    
+    // Remove fundo branco
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i+1];
+        const b = data[i+2];
+        if (r > 240 && g > 240 && b > 240) {
+            data[i+3] = 0; // Transparência
+        }
+    }
+    ctx.putImageData(imageData, 0, 0);
+    
+    canvas.toBlob((blob) => {
+        const dotIdx = filename.lastIndexOf('.');
+        const nameWithoutExt = dotIdx !== -1 ? filename.substring(0, dotIdx) : filename;
+        const sanitizedName = nameWithoutExt
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-zA-Z0-9_\-]/g, '_')
+            .replace(/__+/g, '_')
+            .replace(/^_+|_+$/g, '');
+        const finalName = `${Date.now()}_color_${sanitizedName}.png`;
+        
+        tempColorImageBlob = blob;
+        tempColorImageName = finalName;
+        
+        const badge = document.getElementById('color-image-badge');
+        if (badge) badge.style.display = 'inline-block';
+    }, 'image/png');
+}
+
 // Configura o envio do formulário de criação/edição
 function setupForm() {
     const form = document.getElementById('admin-product-form');
@@ -645,20 +738,60 @@ function setupForm() {
     // Configura os botões de adicionar características dinâmicas
     const btnAddVariation = document.getElementById('btn-add-variation');
     const variationInput = document.getElementById('variation-input');
+    const variationPriceInput = document.getElementById('variation-price-input');
     if (btnAddVariation && variationInput) {
         btnAddVariation.onclick = () => {
             const val = variationInput.value.trim();
-            if (val && !activeVariations.includes(val)) {
-                activeVariations.push(val);
-                variationInput.value = '';
-                renderVariations();
+            const priceVal = variationPriceInput ? variationPriceInput.value.trim() : '';
+            if (val) {
+                // Evita duplicatas normalizando o valor da variação
+                const isDuplicate = activeVariations.some(v => {
+                    const activeVal = typeof v === 'object' && v !== null ? v.value : String(v);
+                    return activeVal.toLowerCase() === val.toLowerCase();
+                });
+                
+                if (!isDuplicate) {
+                    activeVariations.push({
+                        value: val,
+                        price: priceVal ? parseFloat(priceVal) : null
+                    });
+                    variationInput.value = '';
+                    if (variationPriceInput) variationPriceInput.value = '';
+                    renderVariations();
+                }
             }
         };
-        variationInput.onkeydown = (e) => {
+        
+        const triggerAdd = (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 btnAddVariation.click();
             }
+        };
+        variationInput.onkeydown = triggerAdd;
+        if (variationPriceInput) variationPriceInput.onkeydown = triggerAdd;
+    }
+
+    const btnColorImage = document.getElementById('btn-color-image');
+    const colorImageFile = document.getElementById('color-image-file');
+    const colorImageBadge = document.getElementById('color-image-badge');
+    
+    if (btnColorImage && colorImageFile) {
+        btnColorImage.onclick = () => colorImageFile.click();
+        
+        colorImageFile.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    processColorImage(img, 600, file.name);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
         };
     }
 
@@ -671,7 +804,20 @@ function setupForm() {
             const name = colorNameInput.value.trim();
             if (name) {
                 if (!activeColors.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-                    activeColors.push({ hex, name });
+                    activeColors.push({ 
+                        hex, 
+                        name, 
+                        image_url: null, 
+                        tempBlob: tempColorImageBlob, 
+                        tempName: tempColorImageName 
+                    });
+                    
+                    // Reseta campos temporários da imagem da cor
+                    tempColorImageBlob = null;
+                    tempColorImageName = '';
+                    if (colorImageFile) colorImageFile.value = '';
+                    if (colorImageBadge) colorImageBadge.style.display = 'none';
+                    
                     colorNameInput.value = '';
                     renderColors();
                 } else {
@@ -782,10 +928,38 @@ function setupForm() {
                 }
             }
 
+            // 4. Upload das fotos das cores
+            for (const color of activeColors) {
+                if (color.tempBlob) {
+                    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                         .from('product-images')
+                         .upload(color.tempName, color.tempBlob, {
+                             contentType: 'image/png',
+                             cacheControl: '3600'
+                         });
+                         
+                    if (uploadError) throw uploadError;
+                    
+                    const { data: publicUrlData } = supabaseClient.storage
+                        .from('product-images')
+                        .getPublicUrl(color.tempName);
+                        
+                    color.image_url = publicUrlData.publicUrl;
+                    
+                    // Remove do objeto para não mandar blobs ou nomes temporários para a tabela
+                    delete color.tempBlob;
+                    delete color.tempName;
+                }
+            }
+
             // Coleta JSON de especificações dinâmicas incluindo as novas URLs
             const specs = {
                 storage: activeVariations.length > 0 ? activeVariations : null,
-                colors: activeColors.length > 0 ? activeColors : null,
+                colors: activeColors.length > 0 ? activeColors.map(c => ({
+                    hex: c.hex,
+                    name: c.name,
+                    image_url: c.image_url || null
+                })) : null,
                 carousel_image_url: is_best_seller ? carouselImageUrl : null,
                 new_launch_image_url: is_new_launch ? newLaunchImageUrl : null
             };
@@ -865,7 +1039,11 @@ window.startEditProduct = function(id) {
     document.getElementById('product-id').value = product.id;
     document.getElementById('prod-name').value = product.name;
     document.getElementById('prod-category').value = product.category;
-    document.getElementById('prod-subcategory').value = product.sub_category || '';
+    if (typeof window.updateSubcategories === 'function') {
+        window.updateSubcategories(product.category, product.sub_category || '');
+    } else {
+        document.getElementById('prod-subcategory').value = product.sub_category || '';
+    }
     document.getElementById('prod-desc').value = product.description || '';
     document.getElementById('prod-price').value = product.price;
     document.getElementById('prod-original-price').value = product.original_price || '';
@@ -873,13 +1051,28 @@ window.startEditProduct = function(id) {
     document.getElementById('prod-new-launch').checked = product.is_new_launch || false;
     
     // Carrega especificações dinamicamente
-    const specs = product.specs || {};
-    activeVariations = Array.isArray(specs.storage) ? specs.storage : (specs.storage ? [specs.storage] : []);
-    activeColors = Array.isArray(specs.colors) ? specs.colors : [];
+    activeVariations = Array.isArray(specs.storage) ? specs.storage.map(s => {
+        if (typeof s === 'object' && s !== null) {
+            return { value: s.value || '', price: s.price || null };
+        }
+        return { value: String(s), price: null };
+    }) : (specs.storage ? [{ value: String(specs.storage), price: null }] : []);
+    
+    // Normalização das cores para o formato de objeto com image_url
+    activeColors = Array.isArray(specs.colors) ? specs.colors.map(c => {
+        if (typeof c === 'object' && c !== null) {
+            return { 
+                hex: c.hex || '#000000', 
+                name: c.name || 'Cor', 
+                image_url: c.image_url || null 
+            };
+        }
+        return { hex: '#000000', name: String(c), image_url: null };
+    }) : [];
     
     // Caso colors seja uma string (formato legado), faz a conversão
     if (typeof specs.colors === 'string') {
-        activeColors = specs.colors.split(',').map(c => c.trim()).filter(c => c !== '').map(c => ({ hex: '#000000', name: c }));
+        activeColors = specs.colors.split(',').map(c => c.trim()).filter(c => c !== '').map(c => ({ hex: '#000000', name: c, image_url: null }));
     }
     
     renderVariations();
@@ -1027,25 +1220,34 @@ function resetForm() {
     switchTab('list');
 }
 
-// Alterna entre abas de Gerenciamento e Cadastro/Edição
+// Alterna entre abas de Gerenciamento, Cadastro/Edição e Visualização de Visitas
 window.switchTab = function(tabName) {
     const listBtn = document.getElementById('tab-btn-list');
     const formBtn = document.getElementById('tab-btn-form');
+    const visitorsBtn = document.getElementById('tab-btn-visitors');
+    
     const listContent = document.getElementById('tab-list');
     const formContent = document.getElementById('tab-form');
+    const visitorsContent = document.getElementById('tab-visitors');
 
-    if (!listBtn || !formBtn || !listContent || !formContent) return;
+    // Desativa todos
+    [listBtn, formBtn, visitorsBtn].forEach(btn => btn && btn.classList.remove('active'));
+    [listContent, formContent, visitorsContent].forEach(content => content && content.classList.remove('active'));
 
+    // Ativa a selecionada
     if (tabName === 'list') {
-        listBtn.classList.add('active');
-        formBtn.classList.remove('active');
-        listContent.classList.add('active');
-        formContent.classList.remove('active');
-    } else {
-        formBtn.classList.add('active');
-        listBtn.classList.remove('active');
-        formContent.classList.add('active');
-        listContent.classList.remove('active');
+        listBtn && listBtn.classList.add('active');
+        listContent && listContent.classList.add('active');
+    } else if (tabName === 'form') {
+        formBtn && formBtn.classList.add('active');
+        formContent && formContent.classList.add('active');
+    } else if (tabName === 'visitors') {
+        visitorsBtn && visitorsBtn.classList.add('active');
+        visitorsContent && visitorsContent.classList.add('active');
+        // Carrega dados de visitas ao abrir a aba
+        if (typeof loadVisits === 'function') {
+            loadVisits();
+        }
     }
 };
 
@@ -1067,12 +1269,27 @@ async function syncAllProductsFromHTML() {
         { name: 'baterias.html', defaultCategory: 'baterias' },
         { name: 'audio.html', defaultCategory: 'audio' },
         { name: 'acessorios.html', defaultCategory: 'acessorios' },
-        { name: 'informatica.html', defaultCategory: 'informatica' }
+        { name: 'informatica.html', defaultCategory: 'informatica' },
+        { name: 'moda.html', defaultCategory: 'moda' },
+        { name: 'perfumes.html', defaultCategory: 'perfumes' },
+        { name: 'outros.html', defaultCategory: 'outros' }
     ];
     
     let allExtractedProducts = [];
     
     try {
+        // Carrega perfumes padrões do arquivo JSON local para ter como backup/inicialização
+        try {
+            const perfumesRes = await fetch('perfumes_defaults.json');
+            if (perfumesRes.ok) {
+                const defaultPerfumes = await perfumesRes.json();
+                allExtractedProducts.push(...defaultPerfumes);
+                console.log(`Carregados ${defaultPerfumes.length} perfumes padrões.`);
+            }
+        } catch (e) {
+            console.warn('Erro ao carregar perfumes padrões do JSON local:', e);
+        }
+
         for (const page of pages) {
             console.log(`Buscando conteúdo de: ${page.name}`);
             const response = await fetch(page.name);
@@ -1143,21 +1360,25 @@ async function syncAllProductsFromHTML() {
                     if (src) image_url = src;
                 }
                 
-                allExtractedProducts.push({
-                    name,
-                    price,
-                    original_price: null,
-                    description,
-                    category: page.defaultCategory,
-                    sub_category,
-                    image_url,
-                    specs: {
-                        storage: storage.length > 0 ? storage : null,
-                        colors: colors.length > 0 ? colors : null
-                    },
-                    is_best_seller: false,
-                    is_new_launch: false
-                });
+                // Evita duplicar se já foi inserido via defaultPerfumes
+                const alreadyExtracted = allExtractedProducts.some(p => p.name.toLowerCase().trim() === name.toLowerCase().trim());
+                if (!alreadyExtracted) {
+                    allExtractedProducts.push({
+                        name,
+                        price,
+                        original_price: null,
+                        description,
+                        category: page.defaultCategory,
+                        sub_category,
+                        image_url,
+                        specs: {
+                            storage: storage.length > 0 ? storage : null,
+                            colors: colors.length > 0 ? colors : null
+                        },
+                        is_best_seller: false,
+                        is_new_launch: false
+                    });
+                }
             });
         }
         
@@ -1166,12 +1387,32 @@ async function syncAllProductsFromHTML() {
             return;
         }
         
-        // Puxa produtos atuais do Supabase
+        // Puxa produtos atuais do Supabase (com todas as colunas)
         const { data: dbProducts, error: selectError } = await supabaseClient
             .from('products')
-            .select('id, name, image_url');
+            .select('*');
             
         if (selectError) throw selectError;
+        
+        // Adiciona produtos dinâmicos (perfumes, moda, outros) do banco que não estão no allExtractedProducts
+        for (const dbProd of dbProducts) {
+            const exists = allExtractedProducts.some(p => p.name.toLowerCase().trim() === dbProd.name.toLowerCase().trim());
+            if (!exists) {
+                allExtractedProducts.push({
+                    name: dbProd.name,
+                    price: dbProd.price,
+                    original_price: dbProd.original_price,
+                    description: dbProd.description,
+                    category: dbProd.category,
+                    sub_category: dbProd.sub_category,
+                    image_url: dbProd.image_url,
+                    specs: dbProd.specs,
+                    is_best_seller: dbProd.is_best_seller,
+                    is_new_launch: dbProd.is_new_launch,
+                    is_dynamic: true
+                });
+            }
+        }
         
         let insertedCount = 0;
         let updatedCount = 0;
@@ -1181,6 +1422,13 @@ async function syncAllProductsFromHTML() {
             const match = dbProducts.find(p => p.name.toLowerCase().trim() === extProduct.name.toLowerCase().trim());
             
             if (match) {
+                // Se for uma categoria dinâmica (perfumes, moda, outros), preservamos os valores atuais do banco (preço, descrição, specs)
+                // para não perder edições manuais feitas pelo usuário no painel administrativo
+                const isDynamicCategory = ['perfumes', 'moda', 'outros'].includes(extProduct.category);
+                const finalPrice = isDynamicCategory ? (match.price || extProduct.price) : extProduct.price;
+                const finalDesc = isDynamicCategory ? (match.description || extProduct.description) : extProduct.description;
+                const finalSpecs = isDynamicCategory ? (match.specs || extProduct.specs) : extProduct.specs;
+                
                 // Se o produto já possui uma imagem customizada vinda do Supabase Storage (/product-images/), preservamos ela.
                 // Caso contrário, se o HTML trouxer uma imagem válida que não seja placeholder, usamos ela.
                 const isSupabaseImage = match.image_url && match.image_url.includes('/product-images/');
@@ -1191,12 +1439,12 @@ async function syncAllProductsFromHTML() {
                 const { error: updateError } = await supabaseClient
                     .from('products')
                     .update({
-                        price: extProduct.price,
-                        description: extProduct.description,
+                        price: finalPrice,
+                        description: finalDesc,
                         category: extProduct.category,
                         sub_category: extProduct.sub_category,
                         image_url: finalImgUrl,
-                        specs: extProduct.specs
+                        specs: finalSpecs
                     })
                     .eq('id', match.id);
                     
@@ -1207,9 +1455,13 @@ async function syncAllProductsFromHTML() {
                 }
             } else {
                 // Insere novo
+                // Para não ter chaves extras de controle local
+                const insertItem = { ...extProduct };
+                delete insertItem.is_dynamic;
+                
                 const { error: insertError } = await supabaseClient
                     .from('products')
-                    .insert([extProduct]);
+                    .insert([insertItem]);
                     
                 if (insertError) {
                     console.error(`Erro ao inserir ${extProduct.name}:`, insertError);
@@ -1229,3 +1481,272 @@ async function syncAllProductsFromHTML() {
         importBtn.innerText = 'Sincronizar com o Banco de Dados';
     }
 }
+
+// Controle de Gráficos e Acessos
+let visitsChartInstance = null;
+
+async function loadVisits() {
+    const tableBody = document.getElementById('visits-table-body');
+    if (!tableBody) return;
+    
+    if (!supabaseClient) {
+        tableBody.innerHTML = `<tr><td colspan="3" class="admin-no-products" style="color: #d9534f;">Erro: Supabase não inicializado.</td></tr>`;
+        return;
+    }
+    
+    try {
+        const { data: accesses, error } = await supabaseClient
+            .from('site_accesses')
+            .select('*')
+            .order('created_at', { ascending: false });
+            
+        if (error) throw error;
+        
+        displayVisits(accesses || []);
+    } catch (err) {
+        console.error('Erro ao buscar acessos:', err);
+        tableBody.innerHTML = `<tr><td colspan="3" class="admin-no-products" style="color: #d9534f;">Erro ao buscar acessos: ${err.message}</td></tr>`;
+    }
+}
+
+function displayVisits(accesses) {
+    const tableBody = document.getElementById('visits-table-body');
+    if (!tableBody) return;
+    
+    // 1. Processar estatísticas
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(now.getDate() - 7);
+    const weekStart = oneWeekAgo.getTime();
+    
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setDate(now.getDate() - 30);
+    const monthStart = oneMonthAgo.getTime();
+    
+    const oneQuarterAgo = new Date();
+    oneQuarterAgo.setDate(now.getDate() - 90);
+    const quarterStart = oneQuarterAgo.getTime();
+    
+    const oneYearAgo = new Date();
+    oneYearAgo.setDate(now.getDate() - 365);
+    const yearStart = oneYearAgo.getTime();
+    
+    let todayCount = 0;
+    let weekCount = 0;
+    let monthCount = 0;
+    let quarterCount = 0;
+    let yearCount = 0;
+    
+    accesses.forEach(access => {
+        const time = new Date(access.created_at).getTime();
+        if (time >= todayStart) todayCount++;
+        if (time >= weekStart) weekCount++;
+        if (time >= monthStart) monthCount++;
+        if (time >= quarterStart) quarterCount++;
+        if (time >= yearStart) yearCount++;
+    });
+    
+    document.getElementById('stat-today').innerText = todayCount;
+    document.getElementById('stat-week').innerText = weekCount;
+    document.getElementById('stat-month').innerText = monthCount;
+    document.getElementById('stat-quarter').innerText = quarterCount;
+    document.getElementById('stat-year').innerText = yearCount;
+    
+    // 2. Renderizar tabela de últimos acessos
+    tableBody.innerHTML = '';
+    const recentAccesses = accesses.slice(0, 50);
+    
+    if (recentAccesses.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="5" class="admin-no-products">Nenhum acesso registrado ainda.</td></tr>`;
+    } else {
+        recentAccesses.forEach(access => {
+            const row = document.createElement('tr');
+            const dateStr = new Date(access.created_at).toLocaleString('pt-BR');
+            const emailStr = access.user_email || 'Convidado';
+            
+            // Tratamento das novas colunas
+            const deviceStr = `${access.device_type || 'Desconhecido'} (${access.os_name || '?'})`;
+            
+            let locationStr = 'Não detectado';
+            if (access.location_city) {
+                locationStr = access.location_city;
+                if (access.location_region) {
+                    locationStr += ` - ${access.location_region}`;
+                }
+            } else if (access.location_country) {
+                locationStr = access.location_country;
+            }
+            
+            row.innerHTML = `
+                <td>${dateStr}</td>
+                <td><code style="background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; border: 1px solid var(--border-color); color: var(--text-primary);">${access.visitor_id}</code></td>
+                <td>${deviceStr}</td>
+                <td>${locationStr}</td>
+                <td>${emailStr}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+    
+    // 3. Gerar dados para o gráfico (últimos 15 dias)
+    const daysToChart = 15;
+    const labels = [];
+    const dataPoints = [];
+    
+    for (let i = daysToChart - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(now.getDate() - i);
+        const dayStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        labels.push(dayStr);
+        
+        // Conta acessos para esse dia específico
+        const dStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+        const dEnd = dStart + 24 * 60 * 60 * 1000;
+        
+        let dayAccesses = 0;
+        accesses.forEach(access => {
+            const time = new Date(access.created_at).getTime();
+            if (time >= dStart && time < dEnd) {
+                dayAccesses++;
+            }
+        });
+        dataPoints.push(dayAccesses);
+    }
+    
+    renderVisitsChart(labels, dataPoints);
+}
+
+function renderVisitsChart(labels, dataPoints) {
+    const ctx = document.getElementById('visits-chart');
+    if (!ctx) return;
+    
+    if (visitsChartInstance) {
+        visitsChartInstance.destroy();
+    }
+    
+    visitsChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Acessos por Dia',
+                data: dataPoints,
+                borderColor: '#ffc915',
+                backgroundColor: 'rgba(255, 201, 21, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#ffc915',
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Lógica de Subcategorias Dinâmicas no Painel Admin
+(function() {
+    const categorySubcategoryMap = {
+        'celulares': [
+            { value: 'realme', text: 'Realme' },
+            { value: 'xiaomi', text: 'Xiaomi/Redmi/Poco' },
+            { value: 'entrada', text: 'Outras Marcas/Entrada' }
+        ],
+        'tablets': [
+            { value: 'xiaomi-tablets', text: 'Xiaomi & Redmi Pad' },
+            { value: 'amazon-fire', text: 'Amazon Fire' }
+        ],
+        'baterias': [],
+        'audio': [
+            { value: 'fones', text: 'Fones de Ouvido' },
+            { value: 'caixas', text: 'Caixas de Som' }
+        ],
+        'acessorios': [
+            { value: 'peliculas', text: 'Películas' },
+            { value: 'cases', text: 'Cases' },
+            { value: 'carregadores', text: 'Carregadores' },
+            { value: 'cabos', text: 'Cabos' }
+        ],
+        'informatica': [
+            { value: 'teclados', text: 'Teclados' },
+            { value: 'mouse', text: 'Teclado e Mouse' }
+        ],
+        'moda': [
+            { value: 'mochilas-bolsas', text: 'Mochilas e Bolsas' },
+            { value: 'bones', text: 'Bonés' },
+            { value: 'oculos', text: 'Óculos' },
+            { value: 'outros', text: 'Outros' }
+        ],
+        'perfumes': [
+            { value: 'perfumes-arabes', text: 'Perfumes Árabes' },
+            { value: 'cosmeticos', text: 'Cosméticos' },
+            { value: 'importados', text: 'Importados' }
+        ],
+        'outros': [
+            { value: 'ferramentas', text: 'Ferramentas' },
+            { value: 'chaveiros', text: 'Chaveiros' },
+            { value: 'utilidades', text: 'Utilidades & Brindes' }
+        ]
+    };
+
+    window.updateSubcategories = function(categoryVal, selectedSubcategoryVal) {
+        const subcategorySelect = document.getElementById('prod-subcategory');
+        if (!subcategorySelect) return;
+
+        const subcats = categorySubcategoryMap[categoryVal] || [];
+        
+        // Limpa as opções e deixa apenas "Nenhuma"
+        subcategorySelect.innerHTML = '<option value="">Nenhuma</option>';
+        
+        subcats.forEach(sub => {
+            const opt = document.createElement('option');
+            opt.value = sub.value;
+            opt.textContent = sub.text;
+            subcategorySelect.appendChild(opt);
+        });
+
+        // Define a subcategoria selecionada, se houver
+        if (selectedSubcategoryVal) {
+            subcategorySelect.value = selectedSubcategoryVal;
+        }
+    };
+
+    // Configura o evento 'change' no seletor de categorias
+    const setupCategoryListener = () => {
+        const categorySelect = document.getElementById('prod-category');
+        if (categorySelect) {
+            categorySelect.addEventListener('change', function() {
+                window.updateSubcategories(this.value, '');
+            });
+        }
+    };
+    setupCategoryListener();
+    document.addEventListener('DOMContentLoaded', setupCategoryListener);
+})();
