@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "http-server . -p 3000 -c-1"
   },
-  "dependencies": {},
+  "dependencies": {
+    "jimp": "^0.16.13"
+  },
   "devDependencies": {
     "http-server": "^14.1.1"
   }

@@ -417,6 +417,20 @@ function displayProductsList(products) {
             </td>
             <td>
                 <div class="admin-actions-cell">
+                    ${product.is_paused ? `
+                        <button class="btn-admin-action resume" onclick="togglePauseProduct('${product.id}', true)" title="Reativar Vendas" style="color: #28a745; background-color: rgba(40, 167, 69, 0.1);">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                        </button>
+                    ` : `
+                        <button class="btn-admin-action pause" onclick="togglePauseProduct('${product.id}', false)" title="Pausar Vendas" style="color: #ff9f1a; background-color: rgba(255, 159, 26, 0.1);">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="6" y="4" width="4" height="16"></rect>
+                                <rect x="14" y="4" width="4" height="16"></rect>
+                            </svg>
+                        </button>
+                    `}
                     <button class="btn-admin-action edit" onclick="startEditProduct('${product.id}')" title="Editar">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -631,10 +645,12 @@ function renderVariations() {
         // Suporta tanto o novo formato de objeto { value, price } quanto strings legadas
         const value = typeof val === 'object' && val !== null ? val.value : String(val);
         const price = typeof val === 'object' && val !== null ? val.price : null;
+        const color = typeof val === 'object' && val !== null ? val.color : null;
         const priceLabel = price ? ` (R$ ${parseFloat(price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })})` : '';
+        const colorLabel = color ? ` [${color}]` : '';
         
         tag.innerHTML = `
-            <span>${value}${priceLabel}</span>
+            <span>${value}${priceLabel}${colorLabel}</span>
             <button type="button" class="admin-tag-remove-btn" onclick="removeVariation(${idx})">&times;</button>
         `;
         container.appendChild(tag);
@@ -665,6 +681,22 @@ function renderColors() {
         `;
         container.appendChild(tag);
     });
+
+    // Atualiza o select de cores da variação
+    const colorSelect = document.getElementById('variation-color-select');
+    if (colorSelect) {
+        const currentValue = colorSelect.value;
+        colorSelect.innerHTML = '<option value="">Global / Sem Cor</option>';
+        activeColors.forEach(color => {
+            const opt = document.createElement('option');
+            opt.value = color.name;
+            opt.textContent = color.name;
+            colorSelect.appendChild(opt);
+        });
+        if (activeColors.some(c => c.name === currentValue)) {
+            colorSelect.value = currentValue;
+        }
+    }
 }
 
 window.removeColor = function(index) {
@@ -739,24 +771,29 @@ function setupForm() {
     const btnAddVariation = document.getElementById('btn-add-variation');
     const variationInput = document.getElementById('variation-input');
     const variationPriceInput = document.getElementById('variation-price-input');
+    const variationColorSelect = document.getElementById('variation-color-select');
     if (btnAddVariation && variationInput) {
         btnAddVariation.onclick = () => {
             const val = variationInput.value.trim();
             const priceVal = variationPriceInput ? variationPriceInput.value.trim() : '';
+            const colorVal = variationColorSelect ? variationColorSelect.value : '';
             if (val) {
-                // Evita duplicatas normalizando o valor da variação
+                // Evita duplicatas normalizando o valor da variação e cor
                 const isDuplicate = activeVariations.some(v => {
                     const activeVal = typeof v === 'object' && v !== null ? v.value : String(v);
-                    return activeVal.toLowerCase() === val.toLowerCase();
+                    const activeCol = typeof v === 'object' && v !== null ? v.color : '';
+                    return activeVal.toLowerCase() === val.toLowerCase() && (activeCol || '').toLowerCase() === (colorVal || '').toLowerCase();
                 });
                 
                 if (!isDuplicate) {
                     activeVariations.push({
                         value: val,
-                        price: priceVal ? parseFloat(priceVal) : null
+                        price: priceVal ? parseFloat(priceVal) : null,
+                        color: colorVal || null
                     });
                     variationInput.value = '';
                     if (variationPriceInput) variationPriceInput.value = '';
+                    if (variationColorSelect) variationColorSelect.value = '';
                     renderVariations();
                 }
             }
@@ -770,6 +807,7 @@ function setupForm() {
         };
         variationInput.onkeydown = triggerAdd;
         if (variationPriceInput) variationPriceInput.onkeydown = triggerAdd;
+        if (variationColorSelect) variationColorSelect.onkeydown = triggerAdd;
     }
 
     const btnColorImage = document.getElementById('btn-color-image');
@@ -1051,12 +1089,13 @@ window.startEditProduct = function(id) {
     document.getElementById('prod-new-launch').checked = product.is_new_launch || false;
     
     // Carrega especificações dinamicamente
+    const specs = product.specs || {};
     activeVariations = Array.isArray(specs.storage) ? specs.storage.map(s => {
         if (typeof s === 'object' && s !== null) {
-            return { value: s.value || '', price: s.price || null };
+            return { value: s.value || '', price: s.price || null, color: s.color || null };
         }
-        return { value: String(s), price: null };
-    }) : (specs.storage ? [{ value: String(specs.storage), price: null }] : []);
+        return { value: String(s), price: null, color: null };
+    }) : (specs.storage ? [{ value: String(specs.storage), price: null, color: null }] : []);
     
     // Normalização das cores para o formato de objeto com image_url
     activeColors = Array.isArray(specs.colors) ? specs.colors.map(c => {
@@ -1177,6 +1216,27 @@ window.deleteProduct = async function(id, imageUrl) {
     } catch (err) {
         console.error('Erro ao excluir produto:', err);
         alert(`Erro ao excluir produto: ${err.message}`);
+    }
+};
+
+// Pausa ou reativa as vendas do produto (exibição no site)
+window.togglePauseProduct = async function(id, isCurrentlyPaused) {
+    const actionText = isCurrentlyPaused ? 'reativar' : 'pausar';
+    if (!await confirm(`Tem certeza que deseja ${actionText} as vendas deste produto?`)) return;
+    
+    try {
+        const { error } = await supabaseClient
+            .from('products')
+            .update({ is_paused: !isCurrentlyPaused })
+            .eq('id', id);
+            
+        if (error) throw error;
+        
+        alert(`Produto ${isCurrentlyPaused ? 'reativado' : 'pausado'} com sucesso!`);
+        loadProducts();
+    } catch (err) {
+        console.error(`Erro ao tentar ${actionText} produto:`, err);
+        alert(`Erro ao tentar ${actionText} produto: ${err.message}`);
     }
 };
 

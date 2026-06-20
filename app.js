@@ -255,24 +255,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 4. LÓGICA DE BUSCA DE PRODUTOS REAL EM TEMPO REAL
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-        // Desativa autocomplete do navegador
-        searchInput.setAttribute('autocomplete', 'off');
-        
-        // Cria o dropdown flutuante dinamicamente se não existir
-        let dropdown = document.getElementById('search-results-dropdown');
-        if (!dropdown) {
-            dropdown = document.createElement('div');
-            dropdown.id = 'search-results-dropdown';
-            dropdown.className = 'search-results-dropdown';
-            const searchBox = searchInput.closest('.search-box');
-            if (searchBox) {
-                searchBox.style.position = 'relative';
-                searchBox.appendChild(dropdown);
-            }
-        }
-
+    const searchInputs = document.querySelectorAll('#search-input, .header-search-input, .category-nav-search input');
+    
+    if (searchInputs.length > 0) {
         let searchProductsList = [];
         
         // Carrega produtos uma vez do banco de dados para busca local
@@ -294,145 +279,165 @@ document.addEventListener('DOMContentLoaded', () => {
         
         fetchAllProductsForSearch();
 
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            if (query.length < 2) {
-                dropdown.innerHTML = '';
-                dropdown.classList.remove('active');
-                return;
-            }
-
-            const filtered = searchProductsList.filter(p => 
-                p.name.toLowerCase().includes(query) || 
-                (p.category && p.category.toLowerCase().includes(query)) ||
-                (p.sub_category && p.sub_category.toLowerCase().includes(query))
-            );
-
-            dropdown.innerHTML = '';
+        searchInputs.forEach(searchInput => {
+            // Desativa autocomplete do navegador
+            searchInput.setAttribute('autocomplete', 'off');
             
-            if (filtered.length === 0) {
-                dropdown.innerHTML = '<div class="search-no-results">Nenhum produto encontrado</div>';
-            } else {
-                // Mostra no máximo 5 resultados
-                filtered.slice(0, 5).forEach(product => {
-                    const item = document.createElement('a');
-                    item.className = 'search-result-item';
-                    
-                    const priceFormatted = parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-                    const firstStorage = product.specs && product.specs.storage ? (Array.isArray(product.specs.storage) ? product.specs.storage[0] : product.specs.storage) : null;
-                    const storageVal = (firstStorage && typeof firstStorage === 'object') ? firstStorage.value : String(firstStorage || '');
-                    const storageText = storageVal ? ` (${storageVal})` : '';
-                    
-                    // Direciona para a página correspondente da categoria com destaque do produto
-                    let targetUrl = `${product.category}.html`;
-                    const params = new URLSearchParams();
-                    if (product.sub_category) {
-                        params.append('cat', product.sub_category);
-                    }
-                    params.append('highlight', product.name);
-                    item.href = `${targetUrl}?${params.toString()}`;
+            // Encontra o contêiner de busca pai para posicionar o dropdown
+            const searchBox = searchInput.closest('.search-box, .carousel-search-box');
+            if (!searchBox) return;
+            
+            searchBox.style.position = 'relative';
+            
+            // Obtém ou cria o dropdown exclusivo deste searchBox
+            let dropdown = searchBox.querySelector('.search-results-dropdown');
+            if (!dropdown) {
+                dropdown = document.createElement('div');
+                dropdown.className = 'search-results-dropdown';
+                searchBox.appendChild(dropdown);
+            }
+            
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                if (query.length < 2) {
+                    dropdown.innerHTML = '';
+                    dropdown.classList.remove('active');
+                    return;
+                }
 
-                    // Intercepta o clique se já estivermos na página correspondente
-                    item.addEventListener('click', (e) => {
-                        const currentPath = window.location.pathname.toLowerCase();
-                        const targetPage = `${product.category}.html`.toLowerCase();
+                const filtered = searchProductsList.filter(p => 
+                    p.name.toLowerCase().includes(query) || 
+                    (p.category && p.category.toLowerCase().includes(query)) ||
+                    (p.sub_category && p.sub_category.toLowerCase().includes(query))
+                );
+
+                dropdown.innerHTML = '';
+                
+                if (filtered.length === 0) {
+                    dropdown.innerHTML = '<div class="search-no-results">Nenhum produto encontrado</div>';
+                } else {
+                    // Mostra no máximo 5 resultados
+                    filtered.slice(0, 5).forEach(product => {
+                        const item = document.createElement('a');
+                        item.className = 'search-result-item';
                         
-                        if (currentPath.includes(targetPage) || (targetPage === 'celulares.html' && currentPath === '/') || (targetPage === 'celulares.html' && currentPath.endsWith('index.html'))) {
-                            // Se estivermos na home e buscar celular, deixa navegar normalmente para ir para celulares.html
-                            if (currentPath === '/' || currentPath.endsWith('index.html')) {
-                                return;
-                            }
-                            
-                            e.preventDefault();
-                            dropdown.classList.remove('active');
-                            searchInput.value = '';
-                            
-                            // 1. Ativa a subcategoria correta se necessário
-                            if (product.sub_category) {
-                                // Altera a URL discretamente no histórico
-                                const newUrl = window.location.pathname + `?cat=${product.sub_category}&highlight=${encodeURIComponent(product.name)}`;
-                                history.pushState(null, '', newUrl);
-                                
-                                const categoryBtn = document.querySelector(`.category-btn[onclick*="${product.sub_category}"]`);
-                                if (categoryBtn) {
-                                    // Clica no botão da categoria para alternar a marca na tela
-                                    categoryBtn.click();
-                                }
-                            } else {
-                                const newUrl = window.location.pathname + `?highlight=${encodeURIComponent(product.name)}`;
-                                history.pushState(null, '', newUrl);
-                            }
-                            
-                            // 2. Rola e destaca de imediato
-                            setTimeout(() => {
-                                const matchName = (nameA, nameB) => {
-                                    if (!nameA || !nameB) return false;
-                                    const clean = (str) => str
-                                        .toLowerCase()
-                                        .replace(/\(destaque\)/gi, '')
-                                        .replace(/\(barrinha\)/gi, '')
-                                        .replace(/\(flip\)/gi, '')
-                                        .replace(/[\s\-_]+/g, '')
-                                        .replace(/256gb|128gb|64gb|512gb|32gb/gi, '')
-                                        .replace(/4g|5g/gi, '')
-                                        .trim();
-                                    const cA = clean(nameA);
-                                    const cB = clean(nameB);
-                                    return cA === cB || cA.includes(cB) || cB.includes(cA);
-                                };
-                                const cards = document.querySelectorAll('.horizontal-card');
-                                let targetCard = null;
-                                for (const card of cards) {
-                                    const titleEl = card.querySelector('.horizontal-title');
-                                    if (titleEl && matchName(titleEl.textContent, product.name)) {
-                                        targetCard = card;
-                                        break;
-                                    }
-                                }
-                                
-                                if (targetCard) {
-                                    targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                    targetCard.style.outline = '3px solid var(--accent)';
-                                    targetCard.style.boxShadow = '0 0 25px rgba(242, 92, 5, 0.4)';
-                                    targetCard.style.transform = 'scale(1.02)';
-                                    
-                                    setTimeout(() => {
-                                        targetCard.style.outline = '';
-                                        targetCard.style.boxShadow = '';
-                                        targetCard.style.transform = '';
-                                    }, 3500);
-                                }
-                            }, 100);
+                        const priceFormatted = parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                        const firstStorage = product.specs && product.specs.storage ? (Array.isArray(product.specs.storage) ? product.specs.storage[0] : product.specs.storage) : null;
+                        const storageVal = (firstStorage && typeof firstStorage === 'object') ? firstStorage.value : String(firstStorage || '');
+                        const storageText = storageVal ? ` (${storageVal})` : '';
+                        
+                        // Direciona para a página correspondente da categoria com destaque do produto
+                        let targetUrl = `${product.category}.html`;
+                        const params = new URLSearchParams();
+                        if (product.sub_category) {
+                            params.append('cat', product.sub_category);
                         }
+                        params.append('highlight', product.name);
+                        item.href = `${targetUrl}?${params.toString()}`;
+
+                        // Intercepta o clique se já estivermos na página correspondente
+                        item.addEventListener('click', (e) => {
+                            const currentPath = window.location.pathname.toLowerCase();
+                            const targetPage = `${product.category}.html`.toLowerCase();
+                            
+                            if (currentPath.includes(targetPage) || (targetPage === 'celulares.html' && currentPath === '/') || (targetPage === 'celulares.html' && currentPath.endsWith('index.html'))) {
+                                // Se estivermos na home e buscar celular, deixa navegar normalmente para ir para celulares.html
+                                if (currentPath === '/' || currentPath.endsWith('index.html')) {
+                                    return;
+                                }
+                                
+                                e.preventDefault();
+                                dropdown.classList.remove('active');
+                                searchInput.value = '';
+                                
+                                // 1. Ativa a subcategoria correta se necessário
+                                if (product.sub_category) {
+                                    // Altera a URL discretamente no histórico
+                                    const newUrl = window.location.pathname + `?cat=${product.sub_category}&highlight=${encodeURIComponent(product.name)}`;
+                                    history.pushState(null, '', newUrl);
+                                    
+                                    const categoryBtn = document.querySelector(`.category-btn[onclick*="${product.sub_category}"]`);
+                                    if (categoryBtn) {
+                                        // Clicar no botão da categoria para alternar a marca na tela
+                                        categoryBtn.click();
+                                    }
+                                } else {
+                                    const newUrl = window.location.pathname + `?highlight=${encodeURIComponent(product.name)}`;
+                                    history.pushState(null, '', newUrl);
+                                }
+                                
+                                // 2. Rola e destaca de imediato
+                                setTimeout(() => {
+                                    const matchName = (nameA, nameB) => {
+                                        if (!nameA || !nameB) return false;
+                                        const clean = (str) => str
+                                            .toLowerCase()
+                                            .replace(/\(destaque\)/gi, '')
+                                            .replace(/\(barrinha\)/gi, '')
+                                            .replace(/\(flip\)/gi, '')
+                                            .replace(/[\s\-_]+/g, '')
+                                            .replace(/256gb|128gb|64gb|512gb|32gb/gi, '')
+                                            .replace(/4g|5g/gi, '')
+                                            .trim();
+                                        const cA = clean(nameA);
+                                        const cB = clean(nameB);
+                                        return cA === cB || cA.includes(cB) || cB.includes(cA);
+                                    };
+                                    const cards = document.querySelectorAll('.horizontal-card');
+                                    let targetCard = null;
+                                    for (const card of cards) {
+                                        const titleEl = card.querySelector('.horizontal-title');
+                                        if (titleEl && matchName(titleEl.textContent, product.name)) {
+                                            targetCard = card;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if (targetCard) {
+                                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        targetCard.style.outline = '3px solid var(--accent)';
+                                        targetCard.style.boxShadow = '0 0 25px rgba(242, 92, 5, 0.4)';
+                                        targetCard.style.transform = 'scale(1.02)';
+                                        
+                                        setTimeout(() => {
+                                            targetCard.style.outline = '';
+                                            targetCard.style.boxShadow = '';
+                                            targetCard.style.transform = '';
+                                        }, 3500);
+                                    }
+                                }, 100);
+                            }
+                        });
+
+                        item.innerHTML = `
+                            <div class="search-result-thumb">
+                                <img src="${product.image_url || (product.category === 'perfumes' ? 'public/carousel/perfume_placeholder.png' : 'public/carousel/realme_c85.png')}" alt="${product.name}" style="mix-blend-mode: multiply;">
+                            </div>
+                            <div class="search-result-info">
+                                <span class="search-result-name">${product.name}${storageText}</span>
+                                <span class="search-result-category">${product.category.toUpperCase()}</span>
+                                <span class="search-result-price">R$ ${priceFormatted}</span>
+                            </div>
+                        `;
+                        dropdown.appendChild(item);
                     });
-
-                    item.innerHTML = `
-                        <div class="search-result-thumb">
-                            <img src="${product.image_url || 'public/carousel/realme_c85.png'}" alt="${product.name}">
-                        </div>
-                        <div class="search-result-info">
-                            <span class="search-result-name">${product.name}</span>
-                            <span class="search-result-category">${product.category.toUpperCase()}</span>
-                            <span class="search-result-price">R$ ${priceFormatted}</span>
-                        </div>
-                    `;
-                    dropdown.appendChild(item);
-                });
-            }
-            dropdown.classList.add('active');
-        });
-
-        // Fecha ao clicar fora
-        document.addEventListener('click', (e) => {
-            if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.remove('active');
-            }
-        });
-
-        searchInput.addEventListener('focus', () => {
-            if (searchInput.value.trim().length >= 2) {
+                }
                 dropdown.classList.add('active');
-            }
+            });
+
+            // Fecha ao clicar fora deste dropdown específico
+            document.addEventListener('click', (e) => {
+                if (!searchBox.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+
+            // Abre o dropdown se já houver texto válido ao focar
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value.trim().length >= 2) {
+                    dropdown.classList.add('active');
+                }
+            });
         });
     }
 
@@ -536,18 +541,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
             
             function step() {
-                if (window.innerWidth > 768) {
-                    if (!isPaused && !isTransitioning) {
-                        currentScroll -= speed;
-                        // Calculate width of original cards (half the track scrollWidth)
-                        const halfWidth = bsTrack.scrollWidth / 2;
+                if (!isPaused && !isTransitioning) {
+                    currentScroll -= speed;
+                    // Calculate width of original cards (half the track scrollWidth)
+                    const halfWidth = bsTrack.scrollWidth / 2;
+                    if (halfWidth > 0) {
                         if (Math.abs(currentScroll) >= halfWidth) {
                             currentScroll = 0;
                         }
                         bsTrack.style.transform = `translateX(${currentScroll}px)`;
                     }
-                } else {
-                    bsTrack.style.transform = ''; // let mobile scroll natively
                 }
                 animationFrameId = requestAnimationFrame(step);
             }
@@ -644,7 +647,6 @@ document.addEventListener('DOMContentLoaded', () => {
         function createBsDots() {
             if (!bsDotsContainer) return;
             bsDotsContainer.innerHTML = '';
-            if (window.innerWidth <= 768) return;
             if (originalCards.length === 0) return;
 
             // Generate one dot per original card for fine-grained navigation
@@ -706,26 +708,132 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Continuous sync of dots during smooth scrolling
         setInterval(() => {
-            if (!isPaused && !isTransitioning && window.innerWidth > 768) {
+            if (!isPaused && !isTransitioning) {
                 updateActiveDot();
             }
         }, 500);
 
-        // Pause/resume marquee on hover
-        bsViewport.addEventListener('mouseenter', () => { isPaused = true; });
-        bsViewport.addEventListener('mouseleave', () => {
-            if (isPaused && !isTransitioning && !interactionTimeout) {
-                isPaused = false;
+        // Pause/resume marquee on hover (only for mouse pointer, avoiding touch triggers)
+        bsViewport.addEventListener('pointerenter', (e) => {
+            if (e.pointerType === 'mouse') isPaused = true;
+        });
+        bsViewport.addEventListener('pointerleave', (e) => {
+            if (e.pointerType === 'mouse') {
+                if (isPaused && !isTransitioning && !interactionTimeout && !isDragging) {
+                    isPaused = false;
+                }
+            }
+        });
+
+        // Touch Drag Events for Mobile (with Inertia)
+        let isDragging = false;
+        let startX = 0;
+        let startScroll = 0;
+        let lastX = 0;
+        let lastTime = 0;
+        let velocity = 0;
+        let inertiaId = null;
+
+        bsTrack.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            isPaused = true;
+            if (inertiaId) cancelAnimationFrame(inertiaId);
+            startX = e.touches[0].clientX;
+            lastX = startX;
+            startScroll = currentScroll;
+            lastTime = Date.now();
+            velocity = 0;
+        }, { passive: true });
+
+        bsTrack.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const currentX = e.touches[0].clientX;
+            const deltaX = currentX - startX;
+            const currentTime = Date.now();
+            const timeDelta = currentTime - lastTime;
+            
+            if (timeDelta > 0) {
+                velocity = (currentX - lastX) / timeDelta;
+            }
+            
+            lastX = currentX;
+            lastTime = currentTime;
+            
+            currentScroll = startScroll + deltaX;
+            
+            // Seamless wrap bounds
+            const halfWidth = bsTrack.scrollWidth / 2;
+            if (halfWidth > 0) {
+                if (currentScroll > 0) {
+                    currentScroll -= halfWidth;
+                    startX += halfWidth;
+                    startScroll -= halfWidth;
+                } else if (Math.abs(currentScroll) >= halfWidth) {
+                    currentScroll += halfWidth;
+                    startX -= halfWidth;
+                    startScroll += halfWidth;
+                }
+            }
+            
+            bsTrack.style.transform = `translateX(${currentScroll}px)`;
+            updateActiveDot();
+        }, { passive: true });
+
+        bsTrack.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            if (Math.abs(velocity) > 0.15) {
+                let inertiaScroll = currentScroll;
+                let decay = 0.95;
+                let vel = velocity * 12; // momentum factor
+                
+                function applyInertia() {
+                    if (isDragging || isPaused === false) return;
+                    
+                    inertiaScroll += vel;
+                    vel *= decay;
+                    
+                    const halfWidth = bsTrack.scrollWidth / 2;
+                    if (halfWidth > 0) {
+                        if (inertiaScroll > 0) {
+                            inertiaScroll -= halfWidth;
+                        } else if (Math.abs(inertiaScroll) >= halfWidth) {
+                            inertiaScroll += halfWidth;
+                        }
+                    }
+                    
+                    currentScroll = inertiaScroll;
+                    bsTrack.style.transform = `translateX(${currentScroll}px)`;
+                    updateActiveDot();
+                    
+                    if (Math.abs(vel) > 0.1) {
+                        inertiaId = requestAnimationFrame(applyInertia);
+                    } else {
+                        isPaused = false; // resume marquee
+                    }
+                }
+                inertiaId = requestAnimationFrame(applyInertia);
+            } else {
+                isPaused = false; // resume marquee
             }
         });
 
         // Initialize Carousel Structure
         function initCarousel() {
+            // Stop any existing marquee loops
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            if (inertiaId) cancelAnimationFrame(inertiaId);
+
+            // Remove previous clones if they exist to prevent duplication
+            bsTrack.querySelectorAll('.product-card.is-clone').forEach(clone => clone.remove());
+
             originalCards = Array.from(bsTrack.querySelectorAll('.product-card'));
             
             // Clone all cards for a seamless infinite loop
             originalCards.forEach(card => {
                 const clone = card.cloneNode(true);
+                clone.classList.add('is-clone');
                 bsTrack.appendChild(clone);
             });
 
@@ -742,11 +850,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         .from('products')
                         .select('*')
                         .eq('is_best_seller', true)
+                        .neq('is_paused', true)
                         .order('created_at', { ascending: false });
 
                     if (error) throw error;
                     
                     if (products && products.length > 0) {
+                        // Clear existing static fallback cards before appending fresh database products
+                        bsTrack.innerHTML = '';
                         products.forEach(product => {
                             const card = document.createElement('div');
                             card.className = 'product-card';
@@ -778,7 +889,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             card.innerHTML = `
                                 <div class="product-image-container">
-                                    <img src="${finalImgUrl}" alt="${product.name}">
+                                    <img src="${finalImgUrl}" alt="${product.name}" loading="lazy">
                                 </div>
                                 <div class="product-info">
                                     <h3 class="product-title">${product.name}</h3>
@@ -812,17 +923,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Initialize immediately with static HTML fallback cards
+        initCarousel();
+
         // Inicia carregando produtos do Supabase (com fallback estático)
         fetchBestSellers();
 
         window.addEventListener('resize', () => {
             createBsDots();
-            if (window.innerWidth <= 768) {
-                if (animationFrameId) cancelAnimationFrame(animationFrameId);
-                bsTrack.style.transform = '';
-            } else {
-                startMarquee();
-            }
+            startMarquee();
         });
     }
 
@@ -841,18 +950,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMsgDiv = document.getElementById('login-error-msg');
 
     async function openLoginModal(e) {
-        if (e) e.preventDefault();
-        if (supabase) {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                window.location.href = 'admin.html';
-                return;
-            }
-        }
         if (loginModal) {
+            if (e) e.preventDefault();
+            if (supabase) {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    window.location.href = 'admin.html';
+                    return;
+                }
+            }
             loginModal.classList.add('active');
             document.body.style.overflow = 'hidden';
             if (errorMsgDiv) errorMsgDiv.style.display = 'none';
+        } else {
+            if (e) e.preventDefault();
+            window.location.href = 'index.html?login=true';
         }
     }
 
@@ -941,6 +1053,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .from('products')
                 .select('*')
                 .eq('is_new_launch', true)
+                .neq('is_paused', true)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -977,7 +1090,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     const storageLabel = (rawStorage && typeof rawStorage === 'object') ? rawStorage.value : String(rawStorage || '');
                     const storageText = storageLabel ? ` (${storageLabel})` : '';
 
-                    const waText = encodeURIComponent(`Olá, gostaria de comprar o lançamento ${product.name}${storageText} por R$ ${priceFormatted}`);
+                    // Obtém a cor se disponível
+                    let colorLabel = '';
+                    if (product.specs && Array.isArray(product.specs.colors) && product.specs.colors.length > 0) {
+                        const firstColor = product.specs.colors[0];
+                        const colorName = typeof firstColor === 'object' ? firstColor.name : String(firstColor);
+                        if (colorName) colorLabel = ` - Cor: ${colorName}`;
+                    }
+
+                    const waText = encodeURIComponent(`Olá, gostaria de comprar o lançamento ${product.name}${storageText}${colorLabel} por R$ ${priceFormatted}`);
                     const waLink = `https://wa.me/5517997559675?text=${waText}`;
 
                     // Determina o link de Saiba Mais

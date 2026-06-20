@@ -189,6 +189,9 @@
                         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                             <input type="text" id="variation-input" placeholder="Ex: 256GB, 8GB RAM, 100ml, etc." style="flex: 2; min-width: 150px;">
                             <input type="number" id="variation-price-input" step="0.01" placeholder="Preço específico (R$ - Opcional)" style="flex: 1; min-width: 150px; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.88rem; outline: none; background: var(--bg-primary); color: var(--text-primary);">
+                            <select id="variation-color-select" style="flex: 1; min-width: 150px; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.88rem; outline: none; background: var(--bg-primary); color: var(--text-primary);">
+                                <option value="">Global / Sem Cor</option>
+                            </select>
                             <button type="button" id="btn-add-variation" class="btn-admin-nav" style="background-color: var(--accent); color: #ffffff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer;">Add</button>
                         </div>
                         <div id="variations-container" class="admin-tags-container" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
@@ -221,7 +224,7 @@
                         </div>
                     </div>
 
-                    <div style="display: flex; gap: 24px; margin: 12px 0;">
+                    <div class="admin-checkbox-row" style="display: flex; gap: 24px; margin: 12px 0;">
                         <div class="form-group-admin" style="flex-direction: row; align-items: center; gap: 10px; margin: 0;">
                             <input type="checkbox" id="prod-best-seller" style="width: auto; cursor: pointer;">
                             <label for="prod-best-seller" style="cursor: pointer; font-size: 0.85rem; font-weight: 500; white-space: nowrap;">Exibir no Carrossel "Mais Vendidos"</label>
@@ -426,6 +429,38 @@
                             <ul class="footer-sub-list">
                                 <li><a href="informatica.html?cat=teclados">Teclados</a></li>
                                 <li><a href="informatica.html?cat=mouse">Teclado e Mouse</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Coluna 1b: Variedades & Estilo -->
+                <div class="footer-col">
+                    <h4>Variedades</h4>
+                    <ul>
+                        <li class="footer-sub-group">
+                            <span class="footer-sub-label">Moda</span>
+                            <ul class="footer-sub-list">
+                                <li><a href="moda.html?cat=mochilas-bolsas">Mochilas e Bolsas</a></li>
+                                <li><a href="moda.html?cat=bones">Bonés</a></li>
+                                <li><a href="moda.html?cat=oculos">Óculos</a></li>
+                                <li><a href="moda.html?cat=outros">Carteiras</a></li>
+                            </ul>
+                        </li>
+                        <li class="footer-sub-group">
+                            <span class="footer-sub-label">Perfumes</span>
+                            <ul class="footer-sub-list">
+                                <li><a href="perfumes.html?cat=perfumes-arabes">Perfumes Árabes</a></li>
+                                <li><a href="perfumes.html?cat=cosmeticos">Cosméticos</a></li>
+                                <li><a href="perfumes.html?cat=importados">Importados</a></li>
+                            </ul>
+                        </li>
+                        <li class="footer-sub-group">
+                            <span class="footer-sub-label">Outros</span>
+                            <ul class="footer-sub-list">
+                                <li><a href="outros.html?cat=ferramentas">Ferramentas</a></li>
+                                <li><a href="outros.html?cat=chaveiros">Chaveiros</a></li>
+                                <li><a href="outros.html?cat=utilidades">Utilidades & Brindes</a></li>
                             </ul>
                         </li>
                     </ul>

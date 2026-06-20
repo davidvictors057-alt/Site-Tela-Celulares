@@ -62,12 +62,12 @@
         if (typeof window.supabase === 'undefined') return;
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         
-        try {
-            // 2. Query products for current category
+        try {             // 2. Query products for current category
             const { data: products, error } = await supabase
                 .from('products')
                 .select('*')
                 .eq('category', category)
+                .neq('is_paused', true)
                 .order('created_at', { ascending: false });
                 
             if (error) throw error;
@@ -96,11 +96,11 @@
                 groups[sub].push(product);
             });
             
+            const renderedSections = new Set();
+
             // 4. Render each subcategory group
             Object.keys(groups).forEach(sub => {
-                // Find subcategory element by ID (e.g. #realme, #xiaomi, #entrada, #amazon-fire, etc.)
                 let sectionId = sub;
-                // Map custom subcategories to element IDs if needed
                 if (category === 'tablets') {
                     if (sub === 'xiaomi') sectionId = 'xiaomi-tablets';
                     else if (sub === 'entrada') sectionId = 'amazon-fire';
@@ -115,8 +115,8 @@
                 const grid = section.querySelector('.category-grid') || section.querySelector('.products-grid');
                 if (!grid) return;
                 
-                // Clear static HTML cards
                 grid.innerHTML = '';
+                renderedSections.add(section.id);
                 
                 const items = groups[sub];
                 items.forEach(product => {
@@ -127,7 +127,6 @@
                     const specs = product.specs || {};
                     let colorsHtml = '';
                     
-                    // Normaliza cores para um formato uniforme: [{ hex, name, image_url }]
                     let normalizedColors = [];
                     if (specs.colors) {
                         if (Array.isArray(specs.colors)) {
@@ -157,7 +156,6 @@
                         
                         const dots = normalizedColors.map((colorObj, idx) => {
                             const cleanColor = colorObj.name.toLowerCase().trim();
-                            // Se colorObj.hex é válido e diferente de '#000000', usamos ele, senão tentamos o mapeamento
                             const hex = (colorObj.hex && colorObj.hex !== '#000000') ? colorObj.hex : (colorMap[cleanColor] || '#000000');
                             const colorImg = colorObj.image_url || '';
                             return `<span class="color-dot ${idx === 0 ? 'active' : ''}" style="background-color: ${hex};" title="${colorObj.name}" data-image="${colorImg}"></span>`;
@@ -173,61 +171,55 @@
                         `;
                     }
                     
-                    // Storage
-                    let storageHtml = '';
+                    // Storage (Variations)
                     let normalizedStorage = [];
                     if (specs.storage) {
                         if (Array.isArray(specs.storage)) {
                             normalizedStorage = specs.storage.map(s => {
                                 if (typeof s === 'object' && s !== null) {
-                                    return { value: s.value || '', price: s.price || null };
+                                    return { 
+                                        value: s.value || '', 
+                                        price: s.price || null,
+                                        color: s.color || null 
+                                    };
                                 }
-                                return { value: String(s), price: null };
+                                return { value: String(s), price: null, color: null };
                             });
                         } else if (typeof specs.storage === 'string') {
-                            normalizedStorage = specs.storage.split(',').map(s => s.trim()).filter(s => s !== '').map(s => ({ value: s, price: null }));
+                            normalizedStorage = specs.storage.split(',').map(s => s.trim()).filter(s => s !== '').map(s => ({ value: s, price: null, color: null }));
                         }
                     }
 
-                    if (normalizedStorage.length > 0) {
-                        const badges = normalizedStorage.map((st, idx) => {
-                            const priceAttr = st.price ? ` data-price="${st.price}"` : '';
-                            return `<span class="storage-badge ${idx === 0 ? 'active' : ''}"${priceAttr}>${st.value}</span>`;
-                        }).join('');
-                        storageHtml = `
-                            <div class="storage-selector">
-                                ${badges}
-                            </div>
-                        `;
-                    }
-                    
                     // Specs List (bullet points)
                     let specsHtml = '';
                     if (product.description) {
                         specsHtml = product.description.split('\n').map(line => `<li>${line.trim()}</li>`).join('');
                     }
                     
-                    // Calculate active/initial price
+                    // Calculate active/initial price and links
                     let initialPrice = parseFloat(product.price);
                     let initialStorageLabel = '';
-                    if (normalizedStorage.length > 0) {
-                        initialStorageLabel = ` (${normalizedStorage[0].value})`;
-                        if (normalizedStorage[0].price) {
-                            initialPrice = parseFloat(normalizedStorage[0].price);
+                    
+                    // Filter storage for initial color
+                    const activeColorObj = normalizedColors.find((_, idx) => idx === 0);
+                    let initialColorName = activeColorObj ? activeColorObj.name : '';
+                    let initialColorLabel = activeColorObj ? ` - Cor: ${activeColorObj.name}` : '';
+                    
+                    const filteredStorageForInit = normalizedStorage.filter(s => 
+                        !s.color || (initialColorName && s.color.toLowerCase().trim() === initialColorName.toLowerCase().trim())
+                    );
+                    
+                    if (filteredStorageForInit.length > 0) {
+                        initialStorageLabel = ` (${filteredStorageForInit[0].value})`;
+                        if (filteredStorageForInit[0].price) {
+                            initialPrice = parseFloat(filteredStorageForInit[0].price);
                         }
                     }
                     
-                    let initialColorLabel = '';
-                    const activeColorObj = normalizedColors.find((_, idx) => idx === 0);
-                    if (activeColorObj) {
-                        initialColorLabel = ` - Cor: ${activeColorObj.name}`;
-                    }
-
                     const priceFormatted = initialPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
                     const waText = encodeURIComponent(`Olá, gostaria de comprar o ${product.name}${initialStorageLabel}${initialColorLabel} por R$ ${priceFormatted}`);
                     const waLink = `https://wa.me/5517997559675?text=${waText}`;
                     
-                    // mix-blend-mode: multiply blends the white image background perfectly into the grey cards!
                     const defaultImg = category === 'perfumes' ? 'public/carousel/perfume_placeholder.png' : 'public/carousel/realme_c85.png';
                     const initialImg = (activeColorObj && activeColorObj.image_url) 
                         ? activeColorObj.image_url 
@@ -242,7 +234,7 @@
                         <div class="horizontal-info">
                             <h3 class="horizontal-title">${product.name}</h3>
                             ${colorsHtml}
-                            ${storageHtml}
+                            <div class="storage-selector-container"></div>
                             <ul class="spec-list">
                                 ${specsHtml}
                             </ul>
@@ -253,8 +245,85 @@
                         </div>
                     `;
                     
+                    // Render storage badges for the initial color
+                    const storageContainer = card.querySelector('.storage-selector-container');
+                    if (storageContainer) {
+                        renderStorageBadgesForColor(initialColorName, storageContainer);
+                    }
+                    
                     grid.appendChild(card);
-                });
+
+                    // Rebind interactive selectors (Color dots)
+                    card.querySelectorAll('.color-dot').forEach(dot => {
+                        dot.addEventListener('click', function() {
+                            const parent = this.closest('.color-dots');
+                            parent.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+                            this.classList.add('active');
+                            
+                            const label = this.closest('.color-selector').querySelector('span');
+                            const colorName = this.getAttribute('title');
+                            label.textContent = `Cor: ${colorName}`;
+                            
+                            // Update image
+                            const imgEl = card.querySelector('.horizontal-image-container img');
+                            if (imgEl) {
+                                const colorImg = this.getAttribute('data-image');
+                                if (colorImg) {
+                                    imgEl.src = colorImg;
+                                } else {
+                                    const defaultSrc = imgEl.getAttribute('data-default-src');
+                                    if (defaultSrc) imgEl.src = defaultSrc;
+                                }
+                            }
+                            
+                            // Re-render storage badges for the selected color
+                            const storageCont = card.querySelector('.storage-selector-container');
+                            if (storageCont) {
+                                renderStorageBadgesForColor(colorName, storageCont);
+                            }
+                            
+                            updateCardBuyLinkAndPrice(card);
+                        });
+                    });
+                
+                // Helper to render storage badges filtered by color name
+                function renderStorageBadgesForColor(colorName, container, activeValue = null) {
+                    container.innerHTML = '';
+                    const card = container.closest('.horizontal-card');
+                    if (!card) return;
+                    
+                    // Filter storage options by color name (match or no color specified)
+                    const filtered = normalizedStorage.filter(s => 
+                        !s.color || (colorName && s.color.toLowerCase().trim() === colorName.toLowerCase().trim())
+                    );
+                    
+                    if (filtered.length === 0) {
+                        container.style.display = 'none';
+                        return;
+                    }
+                    
+                    container.style.display = 'block';
+                    filtered.forEach((st, idx) => {
+                        const badge = document.createElement('span');
+                        badge.className = 'storage-badge';
+                        badge.textContent = st.value;
+                        if (st.price) {
+                            badge.setAttribute('data-price', st.price);
+                        }
+                        
+                        const isBadgeActive = activeValue ? st.value === activeValue : idx === 0;
+                        if (isBadgeActive) {
+                            badge.classList.add('active');
+                        }
+                        
+                        badge.addEventListener('click', function() {
+                            container.querySelectorAll('.storage-badge').forEach(b => b.classList.remove('active'));
+                            this.classList.add('active');
+                            updateCardBuyLinkAndPrice(card);
+                        });
+                        container.appendChild(badge);
+                    });
+                }
                 
                 // Helper to update price and WhatsApp link dynamically
                 function updateCardBuyLinkAndPrice(card) {
@@ -300,53 +369,28 @@
                         buyBtn.href = `https://wa.me/5517997559675?text=${waText}`;
                     }
                 }
-
-                // Rebind interactive selectors (Color dots)
-                grid.querySelectorAll('.color-dot').forEach(dot => {
-                    dot.addEventListener('click', function() {
-                        const parent = this.closest('.color-dots');
-                        parent.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
-                        this.classList.add('active');
-                        
-                        const label = this.closest('.color-selector').querySelector('span');
-                        const colorName = this.getAttribute('title');
-                        label.textContent = `Cor: ${colorName}`;
-                        
-                        // Atualiza a imagem do card se houver foto específica para a cor selecionada
-                        const card = this.closest('.horizontal-card');
-                        if (card) {
-                            const imgEl = card.querySelector('.horizontal-image-container img');
-                            if (imgEl) {
-                                const colorImg = this.getAttribute('data-image');
-                                if (colorImg) {
-                                    imgEl.src = colorImg;
-                                } else {
-                                    // Se a cor selecionada não tiver foto, volta para a imagem padrão do produto
-                                    const defaultSrc = imgEl.getAttribute('data-default-src');
-                                    if (defaultSrc) imgEl.src = defaultSrc;
-                                }
-                            }
-                            updateCardBuyLinkAndPrice(card);
-                        }
-                    });
-                });
-                
-                // Rebind storage badges
-                grid.querySelectorAll('.storage-badge').forEach(badge => {
-                    badge.addEventListener('click', function() {
-                        const parent = this.closest('.storage-selector');
-                        parent.querySelectorAll('.storage-badge').forEach(b => b.classList.remove('active'));
-                        this.classList.add('active');
-                        
-                        const card = this.closest('.horizontal-card');
-                        if (card) {
-                            updateCardBuyLinkAndPrice(card);
-                        }
-                    });
                 });
             });
 
-            // 5. Aciona o destaque de produtos global
+            // 5. Para as subcategorias que não possuem produtos cadastrados, exibe "Em breve" em vez de carregamento infinito
+            const allGridsOnPage = document.querySelectorAll('.category-grid, .products-grid');
+            allGridsOnPage.forEach(grid => {
+                const parentSection = grid.closest('[id]');
+                if (parentSection && !renderedSections.has(parentSection.id)) {
+                    grid.innerHTML = `
+                        <div class="empty-subcategory-message" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #86868b; font-family: 'Outfit', sans-serif;">
+                            <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 10px; color: #d2d2d7; display: block;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                            <p style="font-size: 1rem; font-weight: 500; margin-bottom: 4px; color: var(--text-secondary);">Em breve</p>
+                            <p style="font-size: 0.85rem; color: var(--text-muted);">Novos produtos serão adicionados nesta categoria.</p>
+                        </div>
+                    `;
+                }
+            });
+ 
+            // 6. Aciona o destaque de produtos global
             const urlParams = new URLSearchParams(window.location.search);
             const highlightName = urlParams.get('highlight');
             if (highlightName && typeof window.highlightProduct === 'function') {
