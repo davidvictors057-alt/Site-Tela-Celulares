@@ -97,6 +97,7 @@
             });
             
             const renderedSections = new Set();
+            const clearedGrids = new Set();
 
             // 4. Render each subcategory group
             Object.keys(groups).forEach(sub => {
@@ -109,14 +110,26 @@
                     else if (sub === 'amazon-fire') sectionId = 'amazon-fire';
                 }
                 
-                const section = document.getElementById(sectionId) || document.getElementById(sub);
-                if (!section) return;
+                let section = document.getElementById(sectionId) || document.getElementById(sub);
+                let grid = null;
                 
-                const grid = section.querySelector('.category-grid') || section.querySelector('.products-grid');
+                if (section) {
+                    grid = section.querySelector('.category-grid') || section.querySelector('.products-grid');
+                    renderedSections.add(section.id);
+                } else {
+                    // Fallback para páginas sem seções divididas por subcategorias (ex: baterias.html)
+                    grid = document.querySelector('.category-grid') || document.querySelector('.products-grid');
+                    if (grid) {
+                        renderedSections.add('main-grid');
+                    }
+                }
+                
                 if (!grid) return;
                 
-                grid.innerHTML = '';
-                renderedSections.add(section.id);
+                if (!clearedGrids.has(grid)) {
+                    grid.innerHTML = '';
+                    clearedGrids.add(grid);
+                }
                 
                 const items = groups[sub];
                 items.forEach(product => {
@@ -220,7 +233,18 @@
                     const waText = encodeURIComponent(`Olá, gostaria de comprar o ${product.name}${initialStorageLabel}${initialColorLabel} por R$ ${priceFormatted}`);
                     const waLink = `https://wa.me/5517997559675?text=${waText}`;
                     
-                    const defaultImg = category === 'perfumes' ? 'public/carousel/perfume_placeholder.png' : 'public/carousel/realme_c85.png';
+                    const defaultImgMap = {
+                        'celulares': 'public/carousel/quick_celular.png',
+                        'tablets': 'public/carousel/quick_tablet.png',
+                        'baterias': 'public/carousel/quick_powerbank.png',
+                        'audio': 'public/carousel/quick_audio.png',
+                        'acessorios': 'public/carousel/quick_acessorios.png',
+                        'informatica': 'public/carousel/quick_informatica.png',
+                        'perfumes': 'public/carousel/perfume_placeholder.png',
+                        'moda': 'public/carousel/quick_acessorios.png',
+                        'outros': 'public/carousel/quick_acessorios.png'
+                    };
+                    const defaultImg = defaultImgMap[category] || 'public/carousel/realme_c85.png';
                     const initialImg = (activeColorObj && activeColorObj.image_url) 
                         ? activeColorObj.image_url 
                         : (product.image_url || defaultImg);

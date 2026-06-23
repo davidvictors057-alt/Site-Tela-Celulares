@@ -883,9 +883,21 @@ document.addEventListener('DOMContentLoaded', () => {
                             card.setAttribute('data-href', targetLink);
                             card.style.cursor = 'pointer';
 
-                            const finalImgUrl = (product.specs && product.specs.carousel_image_url) 
-                                 ? product.specs.carousel_image_url 
-                                 : (product.image_url || 'public/carousel/realme_c85.png');
+                             const defaultImgMap = {
+                                 'celulares': 'public/carousel/quick_celular.png',
+                                 'tablets': 'public/carousel/quick_tablet.png',
+                                 'baterias': 'public/carousel/quick_powerbank.png',
+                                 'audio': 'public/carousel/quick_audio.png',
+                                 'acessorios': 'public/carousel/quick_acessorios.png',
+                                 'informatica': 'public/carousel/quick_informatica.png',
+                                 'perfumes': 'public/carousel/perfume_placeholder.png',
+                                 'moda': 'public/carousel/quick_acessorios.png',
+                                 'outros': 'public/carousel/quick_acessorios.png'
+                             };
+                             const defaultImg = defaultImgMap[product.category] || 'public/carousel/realme_c85.png';
+                             const finalImgUrl = (product.specs && product.specs.carousel_image_url) 
+                                  ? product.specs.carousel_image_url 
+                                  : (product.image_url || defaultImg);
 
                             card.innerHTML = `
                                 <div class="product-image-container">

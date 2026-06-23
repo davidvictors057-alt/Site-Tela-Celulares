@@ -3356,4 +3356,83 @@ button {
     .category-nav-search {
         width: 100%;
     }
+}
+
+/* Color and Storage Selector Styles for Category Pages */
+.storage-selector,
+.storage-selector-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+.storage-badge {
+    background-color: var(--border-color);
+    color: var(--text-secondary);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 1px solid transparent;
+}
+.storage-badge.active {
+    background-color: var(--accent);
+    color: var(--bg-primary);
+}
+.color-selector {
+    margin-bottom: 10px;
+    text-align: left;
+}
+.color-selector span {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    display: block;
+    margin-bottom: 4px;
+}
+.color-dots {
+    display: flex;
+    gap: 8px;
+}
+.color-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all var(--transition-fast);
+    box-shadow: inset 0 0 2px rgba(0,0,0,0.2);
+}
+.color-dot.active {
+    border-color: var(--accent);
+    transform: scale(1.15);
+}
+
+/* Specs list with scrollbar for long descriptions to prevent overlap with absolute buttons */
+.spec-list {
+    max-height: 80px !important;
+    overflow-y: auto !important;
+    margin-bottom: 56px !important; /* Margem inferior de segurança para nunca encostar no preço/botão absoluto */
+    scrollbar-width: thin; /* Firefox */
+}
+
+/* Custom scrollbar for Webkit browsers (Chrome, Safari, Edge) */
+.spec-list::-webkit-scrollbar {
+    width: 4px;
+}
+.spec-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.spec-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+    .spec-list {
+        max-height: 48px !important; /* Menor espaço vertical no mobile */
+        margin-bottom: 48px !important;
+    }
 }
